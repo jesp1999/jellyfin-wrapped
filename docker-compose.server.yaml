@@ -12,7 +12,8 @@ services:
     ports:
       - "80:80"
     environment:
-      # Address the *browser* uses to reach Jellyfin. Do not put the API key here.
+      # Address the *browser* uses to reach Jellyfin. Do not put the API key here:
+      # leaving it out is what turns server mode on.
       JELLYFIN_SERVER_URL: http://your-jellyfin-server:8096
       WRAPPED_SERVER_URL: http://backend:3000
     depends_on:
@@ -27,6 +28,18 @@ services:
     environment:
       # Address the *backend* uses to reach Jellyfin.
       JELLYFIN_SERVER_URL: http://your-jellyfin-server:8096
+      # One proxy (the frontend container) sits in front of the backend. Raise this by one
+      # for each extra reverse proxy or tunnel in front of the frontend, so rate limits
+      # see the real client address. See server/README.md.
+      TRUST_PROXY_HOPS: "1"
     expose:
       - "3000"
+    user: "node"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     restart: unless-stopped

@@ -161,9 +161,8 @@ docker compose -f docker-compose.server.yaml up -d --build
 ```
 
 Server mode is on whenever the frontend runs without `JELLYFIN_API_KEY`. Setting it
-brings back the original behavior. Backend settings (`server/`): `CACHE_TTL_SECONDS`,
-`MAX_CACHED_USERS`, `QUERY_TIMEOUT_MS`, `MAX_RESULT_ROWS`. Run its tests with
-`cd server && npm test`.
+brings back the original behavior. The backend's design, security model and every setting are documented in
+[`server/README.md`](server/README.md). Run its tests with `npm run server:test`.
 
 The Playback Reporting plugin keeps about three months of history by default.
 Raise its retention if you want previous years.
