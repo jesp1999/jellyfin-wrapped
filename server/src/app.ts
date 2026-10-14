@@ -2,6 +2,7 @@ import http from "node:http";
 import type { Config } from "./config.js";
 import { JellyfinClient, UpstreamError } from "./jellyfin.js";
 import { UserDbCache } from "./cache.js";
+import { RateLimiter, Semaphore, clientIp, logEvent } from "./limits.js";
 import {
   DatabaseClosedError,
   QueryError,
@@ -15,7 +16,8 @@ const MAX_QUERY_CHARS = 20000;
 class HttpError extends Error {
   constructor(
     readonly status: number,
-    message: string
+    message: string,
+    readonly retryAfterSeconds?: number
   ) {
     super(message);
   }
@@ -24,7 +26,8 @@ class HttpError extends Error {
 function sendJson(
   res: http.ServerResponse,
   status: number,
-  body: unknown
+  body: unknown,
+  extraHeaders: Record<string, string | number> = {}
 ): void {
   const payload = JSON.stringify(body);
   res.writeHead(status, {
@@ -32,6 +35,10 @@ function sendJson(
     "Content-Length": Buffer.byteLength(payload),
     "Cache-Control": "no-store",
     "X-Content-Type-Options": "nosniff",
+    "Cross-Origin-Resource-Policy": "same-origin",
+    "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
+    "Referrer-Policy": "no-referrer",
+    ...extraHeaders,
   });
   res.end(payload);
 }
@@ -91,32 +98,74 @@ export function createApp({
   config: Config;
   jellyfin: JellyfinClient;
 }): App {
+  // Loading a user's data is the expensive step. Many cold users at once would pile up
+  // on the Jellyfin plugin and on memory, so only a few load at the same time.
+  const loads = new Semaphore(config.maxConcurrentLoads);
   const cache = new UserDbCache(
-    async (userId) =>
-      UserDb.create(
-        await jellyfin.fetchUserActivity(userId),
-        config.maxResultRows
+    (userId) =>
+      loads.run(async () =>
+        UserDb.create(await jellyfin.fetchUserActivity(userId), {
+          maxRows: config.maxResultRows,
+          maxBytes: config.maxResultBytes,
+          memoryLimitMb: config.queryMemoryLimitMb,
+        })
       ),
     config.cacheTtlMs,
     config.maxCachedUsers
   );
+  const userLimiter = new RateLimiter(config.rateLimitPerMinute);
+  const authFailLimiter = new RateLimiter(config.authFailLimitPerMinute);
+  const inflight = new Map<string, number>();
 
   async function handlePlaybackReport(
     req: http.IncomingMessage,
     res: http.ServerResponse
   ): Promise<void> {
+    const ip = clientIp(req, config.trustProxyHops);
+
     const token = bearerToken(req);
-    if (!token) throw new HttpError(401, "Authentication required");
 
-    const user = await jellyfin.verifyToken(token);
-    if (!user) throw new HttpError(401, "Invalid or expired session");
+    // A client that keeps sending bad tokens is cut off before it costs Jellyfin lookups.
+    // Users this server already verified keep working, so one bad actor on a shared
+    // address cannot lock everyone else out.
+    const blockedFor = authFailLimiter.blocked(ip);
+    if (blockedFor > 0 && !(token && jellyfin.cachedUser(token))) {
+      logEvent("auth_blocked", { ip });
+      throw new HttpError(429, "Too many failed sign-ins", blockedFor);
+    }
 
-    const query = parseQuery(await readBody(req));
-    // The data comes from the verified user id, never from anything the client sent.
-    const db = await cache.get(user.id);
-    const result = await db.query(query, config.queryTimeoutMs);
-    // Same shape (including the "colums" spelling) the playback reporting plugin returns.
-    sendJson(res, 200, { colums: result.columns, results: result.rows });
+    const user = token ? await jellyfin.verifyToken(token) : null;
+    if (!user) {
+      authFailLimiter.hit(ip);
+      logEvent("auth_failed", { ip });
+      throw new HttpError(
+        401,
+        token ? "Invalid or expired session" : "Authentication required"
+      );
+    }
+
+    const waitSeconds = userLimiter.hit(user.id);
+    if (waitSeconds > 0) {
+      logEvent("rate_limited", { ip, user: user.id });
+      throw new HttpError(429, "Too many requests", waitSeconds);
+    }
+    const running = inflight.get(user.id) ?? 0;
+    if (running >= config.maxInflightPerUser) {
+      throw new HttpError(429, "Too many queries at once", 1);
+    }
+    inflight.set(user.id, running + 1);
+    try {
+      const query = parseQuery(await readBody(req));
+      // The data comes from the verified user id, never from anything the client sent.
+      const db = await cache.get(user.id);
+      const result = await db.query(query, config.queryTimeoutMs);
+      // Same shape (including the "colums" spelling) the playback reporting plugin returns.
+      sendJson(res, 200, { colums: result.columns, results: result.rows });
+    } finally {
+      const left = (inflight.get(user.id) ?? 1) - 1;
+      if (left <= 0) inflight.delete(user.id);
+      else inflight.set(user.id, left);
+    }
   }
 
   const server = http.createServer((req, res) => {
@@ -140,10 +189,17 @@ export function createApp({
 
     run().catch((error: unknown) => {
       if (res.headersSent) return;
-      if (error instanceof HttpError)
-        return sendJson(res, error.status, { error: error.message });
-      if (error instanceof QueryTimeoutError)
+      if (error instanceof HttpError) {
+        const extra: Record<string, number> = {};
+        if (error.retryAfterSeconds !== undefined) {
+          extra["Retry-After"] = error.retryAfterSeconds;
+        }
+        return sendJson(res, error.status, { error: error.message }, extra);
+      }
+      if (error instanceof QueryTimeoutError) {
+        logEvent("query_timeout");
         return sendJson(res, 504, { error: error.message });
+      }
       if (error instanceof QueryError)
         return sendJson(res, 400, { error: error.message });
       if (error instanceof DatabaseClosedError)
@@ -154,6 +210,11 @@ export function createApp({
       sendJson(res, 500, { error: "Internal error" });
     });
   });
+
+  // Slow or stalled connections give up instead of holding sockets open.
+  server.headersTimeout = 10000;
+  server.requestTimeout = 30000;
+  server.keepAliveTimeout = 5000;
 
   return {
     server,

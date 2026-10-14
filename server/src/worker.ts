@@ -8,6 +8,8 @@ export interface InitData {
   columns: ColumnDef[];
   rows: string[][];
   maxRows: number;
+  maxBytes: number;
+  memoryLimitMb: number;
 }
 
 export type WorkerRequest = { id: number; sql: string };
@@ -58,6 +60,10 @@ insert.free();
 
 // Defence in depth: even if the statement check below missed something, writes fail.
 db.run("PRAGMA query_only = ON");
+// A query that builds huge strings fails here instead of exhausting the process.
+db.run(
+  `PRAGMA hard_heap_limit = ${Math.floor(init.memoryLimitMb) * 1024 * 1024}`
+);
 
 function runQuery(sql: string): { columns: string[]; rows: string[][] } {
   if (!READ_ONLY_START.test(sql)) {
@@ -70,11 +76,17 @@ function runQuery(sql: string): { columns: string[]; rows: string[][] } {
   try {
     const columns = statement.getColumnNames();
     const rows: string[][] = [];
+    let bytes = 0;
     while (statement.step()) {
       if (rows.length >= init.maxRows) {
         throw new Error(`Result is larger than ${init.maxRows} rows`);
       }
-      rows.push(statement.get().map(toText));
+      const row = statement.get().map(toText);
+      for (const cell of row) bytes += cell.length * 2;
+      if (bytes > init.maxBytes) {
+        throw new Error("Result is larger than the size limit");
+      }
+      rows.push(row);
     }
     // Advancing the iterator frees the first statement and prepares any second one (without running it).
     if (!statements.next().done) {

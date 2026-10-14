@@ -76,8 +76,15 @@ export class UserDb {
     });
   }
 
-  static async create(data: ActivityData, maxRows: number): Promise<UserDb> {
-    const init: InitData = { columns: data.columns, rows: data.rows, maxRows };
+  static async create(
+    data: ActivityData,
+    limits: { maxRows: number; maxBytes: number; memoryLimitMb: number }
+  ): Promise<UserDb> {
+    const init: InitData = {
+      columns: data.columns,
+      rows: data.rows,
+      ...limits,
+    };
     const db = new UserDb(
       new Worker(new URL("./worker.js", import.meta.url), { workerData: init })
     );

@@ -12,6 +12,20 @@ export interface Config {
   queryTimeoutMs: number;
   /** Maximum number of rows a single query may return. */
   maxResultRows: number;
+  /** Maximum total size of one query's result, in bytes of text. */
+  maxResultBytes: number;
+  /** Memory SQLite may use per user database, in MiB. Stops string-bomb queries. */
+  queryMemoryLimitMb: number;
+  /** Requests per minute allowed for one signed-in user. */
+  rateLimitPerMinute: number;
+  /** Queries one user may run at the same time. */
+  maxInflightPerUser: number;
+  /** Users whose data may be loading from Jellyfin at the same time. */
+  maxConcurrentLoads: number;
+  /** Failed sign-ins per minute allowed from one client address. */
+  authFailLimitPerMinute: number;
+  /** Number of reverse proxies in front of this server (0 = none, use the socket address). */
+  trustProxyHops: number;
 }
 
 function intFromEnv(
@@ -45,5 +59,24 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     maxCachedUsers: intFromEnv(env, "MAX_CACHED_USERS", 50, 1, 1000),
     queryTimeoutMs: intFromEnv(env, "QUERY_TIMEOUT_MS", 5000, 100, 60000),
     maxResultRows: intFromEnv(env, "MAX_RESULT_ROWS", 200000, 1, 5000000),
+    maxResultBytes: intFromEnv(env, "MAX_RESULT_MB", 16, 1, 512) * 1024 * 1024,
+    queryMemoryLimitMb: intFromEnv(env, "QUERY_MEMORY_LIMIT_MB", 128, 16, 2048),
+    rateLimitPerMinute: intFromEnv(
+      env,
+      "RATE_LIMIT_PER_MINUTE",
+      300,
+      1,
+      100000
+    ),
+    maxInflightPerUser: intFromEnv(env, "MAX_INFLIGHT_PER_USER", 4, 1, 100),
+    maxConcurrentLoads: intFromEnv(env, "MAX_CONCURRENT_LOADS", 3, 1, 100),
+    authFailLimitPerMinute: intFromEnv(
+      env,
+      "AUTH_FAIL_LIMIT_PER_MINUTE",
+      20,
+      1,
+      100000
+    ),
+    trustProxyHops: intFromEnv(env, "TRUST_PROXY_HOPS", 0, 0, 10),
   };
 }

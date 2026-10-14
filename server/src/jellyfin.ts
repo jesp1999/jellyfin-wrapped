@@ -90,6 +90,12 @@ export class JellyfinClient {
    * Ask Jellyfin who owns this token. The token is the user's own, so Jellyfin answers
    * for exactly that user. Returns null if the token is not valid.
    */
+  /** A user this server already verified recently, without asking Jellyfin again. */
+  cachedUser(token: string): JellyfinUser | null {
+    const hit = this.tokenCache.get(token);
+    return hit && hit.expires > Date.now() ? hit.user : null;
+  }
+
   async verifyToken(token: string): Promise<JellyfinUser | null> {
     const now = Date.now();
     const hit = this.tokenCache.get(token);
