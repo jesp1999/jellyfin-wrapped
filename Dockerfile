@@ -5,6 +5,8 @@ RUN sed -i \
     -e '/LoadModule substitute_module/s/^#//g' \
     -e '/LoadModule filter_module/s/^#//g' \
     -e '/LoadModule env_module/s/^#//g' \
+    -e '/LoadModule proxy_module/s/^#//g' \
+    -e '/LoadModule proxy_http_module/s/^#//g' \
     /usr/local/apache2/conf/httpd.conf
 
 # Copy your static files
@@ -21,4 +23,6 @@ RUN echo "Include conf/extra/apache-config.conf" \
 RUN echo "PassEnv JELLYFIN_SERVER_URL" \
     >> /usr/local/apache2/conf/httpd.conf && \
     echo "PassEnv JELLYFIN_API_KEY" \
+    >> /usr/local/apache2/conf/httpd.conf
+RUN echo "PassEnv WRAPPED_SERVER_URL" \
     >> /usr/local/apache2/conf/httpd.conf

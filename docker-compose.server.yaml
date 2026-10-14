@@ -1,0 +1,32 @@
+# Server mode: the browser never sees the admin API key.
+# Users sign in with their own Jellyfin account; the backend checks their token
+# and only returns their own playback data.
+#
+#   cp .env.server.example .env.server   # set JELLYFIN_API_KEY (admin key) here
+#   docker compose -f docker-compose.server.yaml up -d --build
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "80:80"
+    environment:
+      # Address the *browser* uses to reach Jellyfin. Do not put the API key here.
+      JELLYFIN_SERVER_URL: http://your-jellyfin-server:8096
+      WRAPPED_SERVER_URL: http://backend:3000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./server
+    env_file:
+      - .env.server
+    environment:
+      # Address the *backend* uses to reach Jellyfin.
+      JELLYFIN_SERVER_URL: http://your-jellyfin-server:8096
+    expose:
+      - "3000"
+    restart: unless-stopped
