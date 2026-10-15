@@ -23,9 +23,8 @@ if [ -n "${WRAPPED_SERVER_URL:-}" ]; then
   target="${WRAPPED_SERVER_URL%/}"
   cat > "$PROXY_CONF" <<CONF
 <Location "/api/">
-    ProxyPass "${target}/api/"
+    ProxyPass "${target}/api/" timeout=30
     ProxyPassReverse "${target}/api/"
-    ProxyTimeout 30
     LimitRequestBody 65536
 </Location>
 CONF
