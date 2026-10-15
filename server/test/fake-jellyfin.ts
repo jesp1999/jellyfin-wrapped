@@ -4,9 +4,12 @@ import http from "node:http";
 export const ADMIN_KEY = "admin-key-that-must-stay-on-the-server";
 export const ALICE = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 export const BOB = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+/** A user with no recorded plays. */
+export const CAROL = "cccccccccccccccccccccccccccccccc";
 export const TOKENS: Record<string, { id: string; name: string }> = {
   "token-alice": { id: ALICE, name: "alice" },
   "token-bob": { id: BOB, name: "bob" },
+  "token-carol": { id: CAROL, name: "carol" },
 };
 
 export const COLUMNS = [
@@ -144,6 +147,8 @@ export function startFakeJellyfin(calls: Call[]): Promise<http.Server> {
             r[0] as string,
             ...r.slice(1),
           ]);
+          // Like the real plugin, send no column names when there are no rows.
+          if (rows.length === 0) return json(200, { colums: [], results: [] });
           // The fake keeps the real table's column order: rowid first, then the table columns.
           const ordered = rows.map((r) => [r[0] as string, ...r.slice(1)]);
           return json(200, {

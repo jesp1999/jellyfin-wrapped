@@ -223,7 +223,11 @@ export class JellyfinClient {
     );
 
     const types = new Map(schema.map((c) => [c.name, c.type]));
-    const names = response.colums.slice(1);
+    // The plugin sends no column names at all when the user has no plays, so use the table layout.
+    const names =
+      response.colums.length > 0
+        ? response.colums.slice(1)
+        : schema.map((c) => c.name);
     for (const name of names) {
       if (!IDENTIFIER_PATTERN.test(name))
         throw new UpstreamError(

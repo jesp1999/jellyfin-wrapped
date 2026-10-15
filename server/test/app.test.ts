@@ -106,6 +106,15 @@ describe("playback report proxy", () => {
     assert.deepEqual(res.body.results, []);
   });
 
+  it("answers a user who has no plays", async () => {
+    const res = await query(
+      "SELECT COUNT(*) FROM PlaybackActivity",
+      "token-carol"
+    );
+    assert.equal(res.status, 200);
+    assert.deepEqual(res.body.results, [["0"]]);
+  });
+
   it("fetches each user's data once and reuses it", async () => {
     const before = calls.filter((c) =>
       c.query?.includes("WHERE UserId")
