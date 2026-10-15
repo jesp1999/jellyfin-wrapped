@@ -16,6 +16,8 @@ RUN sed -i \
     -e '/LoadModule headers_module/s/^#//g' \
     /usr/local/apache2/conf/httpd.conf
 COPY --from=build /app/dist /usr/local/apache2/htdocs/
+# Public files keep the permissions they had in the checkout; make sure Apache can read them.
+RUN chmod -R a+rX /usr/local/apache2/htdocs
 COPY ./apache-config.conf /usr/local/apache2/conf/extra/apache-config.conf
 RUN echo "Include conf/extra/apache-config.conf" >> /usr/local/apache2/conf/httpd.conf && \
     echo "PassEnv JELLYFIN_SERVER_URL" >> /usr/local/apache2/conf/httpd.conf && \
