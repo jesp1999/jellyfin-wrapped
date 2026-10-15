@@ -35,8 +35,8 @@ export const getFirstWatched = async (): Promise<FirstWatched | null> => {
   const queryString = `
 SELECT ItemId, ItemType, DateCreated
 FROM PlaybackActivity
-WHERE UserId = "${userId}"
-AND ItemType IN ("Movie", "Episode")
+WHERE UserId = '${userId}'
+AND ItemType IN ('Movie', 'Episode')
 AND PlayDuration >= ${MIN_PLAY_SECONDS}
 AND DateCreated > '${formatDateForSql(startDate)}'
 AND DateCreated <= '${formatDateForSql(endDate)}'
