@@ -53,6 +53,7 @@ users' browsers.
 | `QUERY_MEMORY_LIMIT_MB`      | `128`    | SQLite memory per user database.                    |
 | `RATE_LIMIT_PER_MINUTE`      | `300`    | Requests per user per minute.                       |
 | `MAX_INFLIGHT_PER_USER`      | `4`      | Queries one user may run at once.                   |
+| `MAX_QUEUED_PER_USER`        | `64`     | Queries one user may have waiting; more get a 429.  |
 | `MAX_CONCURRENT_LOADS`       | `3`      | Users loading data from Jellyfin at once.           |
 | `AUTH_FAIL_LIMIT_PER_MINUTE` | `20`     | Failed sign-ins per client address per minute.      |
 | `TRUST_PROXY_HOPS`           | `0`      | Reverse proxies in front of this server. See below. |

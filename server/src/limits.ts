@@ -2,6 +2,43 @@ import type http from "node:http";
 
 const MAX_TRACKED_KEYS = 10000;
 
+/** Lets a few tasks per key run at once and queues a bounded number of the rest. */
+export class ConcurrencyGate {
+  private readonly running = new Map<string, number>();
+  private readonly waiting = new Map<string, Array<() => void>>();
+
+  constructor(
+    private readonly maxRunning: number,
+    private readonly maxQueued: number
+  ) {}
+
+  /** Resolves with a release function once a slot is free, or null if the queue is full. */
+  acquire(key: string): Promise<(() => void) | null> {
+    const running = this.running.get(key) ?? 0;
+    if (running < this.maxRunning) {
+      this.running.set(key, running + 1);
+      return Promise.resolve(() => this.release(key));
+    }
+    const queue = this.waiting.get(key) ?? [];
+    if (queue.length >= this.maxQueued) return Promise.resolve(null);
+    return new Promise((resolve) => {
+      queue.push(() => resolve(() => this.release(key)));
+      this.waiting.set(key, queue);
+    });
+  }
+
+  private release(key: string): void {
+    const queue = this.waiting.get(key);
+    const next = queue?.shift();
+    if (queue?.length === 0) this.waiting.delete(key);
+    // Hand the slot straight to the next waiter; the running count stays the same.
+    if (next) return next();
+    const left = (this.running.get(key) ?? 1) - 1;
+    if (left <= 0) this.running.delete(key);
+    else this.running.set(key, left);
+  }
+}
+
 /** Counts events per key in one-minute windows. */
 export class RateLimiter {
   private readonly windows = new Map<

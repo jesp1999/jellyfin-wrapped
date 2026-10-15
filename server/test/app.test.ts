@@ -35,6 +35,7 @@ describe("playback report proxy", () => {
       queryMemoryLimitMb: 128,
       rateLimitPerMinute: 1000,
       maxInflightPerUser: 4,
+      maxQueuedPerUser: 64,
       maxConcurrentLoads: 3,
       authFailLimitPerMinute: 1000,
       trustProxyHops: 0,

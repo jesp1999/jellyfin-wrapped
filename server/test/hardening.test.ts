@@ -109,6 +109,7 @@ describe("limits on the running server", () => {
       queryMemoryLimitMb: 16,
       rateLimitPerMinute: 1000,
       maxInflightPerUser: 4,
+      maxQueuedPerUser: 64,
       maxConcurrentLoads: 3,
       authFailLimitPerMinute: 1000,
       trustProxyHops: 0,
@@ -179,9 +180,41 @@ describe("limits on the running server", () => {
     });
   });
 
+  it("queues queries beyond the running limit and runs them in turn", async () => {
+    await withApp(
+      { maxInflightPerUser: 1, maxQueuedPerUser: 8 },
+      async (query) => {
+        const results = await Promise.all(
+          Array.from({ length: 6 }, (_, i) => query(`SELECT ${i}`))
+        );
+        assert.deepEqual(
+          results.map((r) => r.status),
+          [200, 200, 200, 200, 200, 200]
+        );
+      }
+    );
+  });
+
+  it("rejects queries once the queue is full", async () => {
+    await withApp(
+      { maxInflightPerUser: 1, maxQueuedPerUser: 1, queryTimeoutMs: 1500 },
+      async (query) => {
+        const slow = query(
+          "WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM c WHERE x < 2000000000) SELECT COUNT(*) FROM c"
+        );
+        await new Promise((r) => setTimeout(r, 150));
+        const queued = query("SELECT 1");
+        await new Promise((r) => setTimeout(r, 50));
+        assert.equal((await query("SELECT 2")).status, 429);
+        assert.equal((await slow).status, 504);
+        assert.equal((await queued).status, 200);
+      }
+    );
+  });
+
   it("rejects a second query while one is still running", async () => {
     await withApp(
-      { maxInflightPerUser: 1, queryTimeoutMs: 1500 },
+      { maxInflightPerUser: 1, maxQueuedPerUser: 0, queryTimeoutMs: 1500 },
       async (query) => {
         const slow = query(
           "WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM c WHERE x < 2000000000) SELECT COUNT(*) FROM c"

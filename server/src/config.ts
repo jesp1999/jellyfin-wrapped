@@ -20,6 +20,8 @@ export interface Config {
   rateLimitPerMinute: number;
   /** Queries one user may run at the same time. */
   maxInflightPerUser: number;
+  /** Queries one user may have waiting for a free slot before new ones are refused. */
+  maxQueuedPerUser: number;
   /** Users whose data may be loading from Jellyfin at the same time. */
   maxConcurrentLoads: number;
   /** Failed sign-ins per minute allowed from one client address. */
@@ -69,6 +71,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       100000
     ),
     maxInflightPerUser: intFromEnv(env, "MAX_INFLIGHT_PER_USER", 4, 1, 100),
+    maxQueuedPerUser: intFromEnv(env, "MAX_QUEUED_PER_USER", 64, 0, 1000),
     maxConcurrentLoads: intFromEnv(env, "MAX_CONCURRENT_LOADS", 3, 1, 100),
     authFailLimitPerMinute: intFromEnv(
       env,

@@ -2,7 +2,13 @@ import http from "node:http";
 import type { Config } from "./config.js";
 import { JellyfinClient, UpstreamError } from "./jellyfin.js";
 import { UserDbCache } from "./cache.js";
-import { RateLimiter, Semaphore, clientIp, logEvent } from "./limits.js";
+import {
+  ConcurrencyGate,
+  RateLimiter,
+  Semaphore,
+  clientIp,
+  logEvent,
+} from "./limits.js";
 import {
   DatabaseClosedError,
   QueryError,
@@ -115,7 +121,10 @@ export function createApp({
   );
   const userLimiter = new RateLimiter(config.rateLimitPerMinute);
   const authFailLimiter = new RateLimiter(config.authFailLimitPerMinute);
-  const inflight = new Map<string, number>();
+  const gate = new ConcurrencyGate(
+    config.maxInflightPerUser,
+    config.maxQueuedPerUser
+  );
 
   async function handlePlaybackReport(
     req: http.IncomingMessage,
@@ -149,11 +158,11 @@ export function createApp({
       logEvent("rate_limited", { ip, user: user.id });
       throw new HttpError(429, "Too many requests", waitSeconds);
     }
-    const running = inflight.get(user.id) ?? 0;
-    if (running >= config.maxInflightPerUser) {
+    // The page sends many queries at once; run a few and queue the rest instead of failing them.
+    const release = await gate.acquire(user.id);
+    if (!release) {
       throw new HttpError(429, "Too many queries at once", 1);
     }
-    inflight.set(user.id, running + 1);
     try {
       const query = parseQuery(await readBody(req));
       // The data comes from the verified user id, never from anything the client sent.
@@ -162,9 +171,7 @@ export function createApp({
       // Same shape (including the "colums" spelling) the playback reporting plugin returns.
       sendJson(res, 200, { colums: result.columns, results: result.rows });
     } finally {
-      const left = (inflight.get(user.id) ?? 1) - 1;
-      if (left <= 0) inflight.delete(user.id);
-      else inflight.set(user.id, left);
+      release();
     }
   }
 
