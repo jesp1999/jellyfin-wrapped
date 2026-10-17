@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useInView } from "@/hooks/useInView";
 import { Avatar } from "@radix-ui/themes";
 import { formatDuration } from "@/lib/utils";
 import { getImageUrlById, SimpleItemDto } from "@/lib/queries";
@@ -18,7 +19,9 @@ export function MovieCard({
   onHide,
 }: MovieCardProps) {
   const [imageUrl, setImageUrl] = useState<string>();
+  const [ref, seen] = useInView<HTMLDivElement>();
   useEffect(() => {
+    if (!seen) return;
     const fetchImageUrl = async () => {
       try {
         const url = await getImageUrlById(item.id ?? "");
@@ -29,11 +32,11 @@ export function MovieCard({
     };
 
     void fetchImageUrl();
-  }, [item]);
+  }, [item, seen]);
 
   return (
     <div className="bg-card rounded-lg shadow-lg overflow-hidden">
-      <div className="aspect-[2/3] relative">
+      <div ref={ref} className="aspect-[2/3] relative">
         <Avatar
           size="8"
           src={imageUrl}

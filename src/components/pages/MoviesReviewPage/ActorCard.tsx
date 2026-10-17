@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useInView } from "@/hooks/useInView";
 import { Avatar } from "@radix-ui/themes";
 import { getImageUrlById, SimpleItemDto } from "@/lib/queries";
 import { BaseItemPerson } from "@jellyfin/sdk/lib/generated-client";
@@ -19,7 +20,9 @@ export function ActorCard({
   seenInShows,
 }: ActorCardProps) {
   const [imageUrl, setImageUrl] = useState<string>();
+  const [ref, seen] = useInView<HTMLDivElement>();
   useEffect(() => {
+    if (!seen) return;
     const fetchImageUrl = async () => {
       try {
         const url = await getImageUrlById(details.Id ?? "");
@@ -30,11 +33,11 @@ export function ActorCard({
     };
 
     void fetchImageUrl();
-  }, [details]);
+  }, [details, seen]);
 
   return (
     <div className="bg-card rounded-lg shadow-lg overflow-hidden">
-      <div className="aspect-[2/3] relative">
+      <div ref={ref} className="aspect-[2/3] relative">
         <Avatar
           size="8"
           src={imageUrl}
