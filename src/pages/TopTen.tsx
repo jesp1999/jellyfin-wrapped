@@ -5,6 +5,7 @@ import { RankBadge } from "@/components/RankBadge";
 import { formatWatchTime } from "@/lib/time-helpers";
 import { SimpleItemDto } from "@/lib/queries";
 import PageContainer from "@/components/PageContainer";
+import { TopTenShareCard } from "@/components/share/TopTenShareCard";
 import { Container, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { Title } from "@/components/ui/styled";
@@ -19,7 +20,12 @@ export const TopTen = () => {
   if (!data) return null;
 
   return (
-    <PageContainer backgroundColor="var(--purple-8)" nextPage="/first-watched" previousPage="/loading">
+    <PageContainer
+      backgroundColor="var(--purple-8)"
+      nextPage="/first-watched"
+      previousPage="/loading"
+      shareCard={<TopTenShareCard movies={data.movies} shows={data.shows} subtitle={timeframe.description} />}
+    >
       <Container size="4" p="4">
         <Grid gap="6">
           <div style={{ textAlign: "center" }}>

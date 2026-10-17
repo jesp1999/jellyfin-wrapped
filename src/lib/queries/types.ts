@@ -16,6 +16,8 @@ export type SimpleItemDto = {
   durationSeconds?: number;
   // Item whose Primary image to show. Tracks have none; their album does.
   imageId?: string | null;
+  // Performing artist, for songs and music videos.
+  artist?: string | null;
 };
 
 export interface PunchCardData {

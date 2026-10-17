@@ -6,6 +6,12 @@ import { useEffect, useRef, useState } from "react";
 export function useInView<T extends Element>(margin = "300px") {
   const ref = useRef<T>(null);
   const [seen, setSeen] = useState(false);
+  // Sharing captures the whole page, so it asks every lazy image to load first.
+  useEffect(() => {
+    const all = () => setSeen(true);
+    window.addEventListener("wrapped:load-all", all);
+    return () => window.removeEventListener("wrapped:load-all", all);
+  }, []);
   useEffect(() => {
     const el = ref.current;
     if (!el || seen) return;

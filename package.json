@@ -30,6 +30,7 @@
     "date-fns": "^4.1.0",
     "date-fns-holiday-us": "^1.1.0",
     "framer-motion": "^12.26.1",
+    "html-to-image": "^1.11.13",
     "lucide-react": "^0.562.0",
     "react": "^19.2.3",
     "react-chartjs-2": "^5.3.1",

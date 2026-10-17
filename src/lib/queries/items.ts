@@ -29,7 +29,7 @@ export const getItemDtosByIds = async (
   const uncachedIds: string[] = [];
 
   filteredIds.forEach((itemId) => {
-    const cachedItem = getCacheValue(`item3_${itemId}`);
+    const cachedItem = getCacheValue(`item4_${itemId}`);
     if (cachedItem) {
       cachedItems.push(JSON.parse(cachedItem) as SimpleItemDto);
     } else {
@@ -83,9 +83,10 @@ export const getItemDtosByIds = async (
               genreItems: item.GenreItems,
               durationSeconds,
               imageId: pickImageId(item),
+              artist: item.AlbumArtists?.[0]?.Name ?? item.Artists?.[0] ?? item.ArtistItems?.[0]?.Name,
             };
 
-            setCacheValue(`item3_${item.Id}`, JSON.stringify(simpleItem));
+            setCacheValue(`item4_${item.Id}`, JSON.stringify(simpleItem));
             return simpleItem;
           }
         );
@@ -117,8 +118,9 @@ export const getItemDtosByIds = async (
           genreItems: item.data.GenreItems,
           durationSeconds,
           imageId: pickImageId(item.data),
+          artist: item.data.AlbumArtists?.[0]?.Name ?? item.data.Artists?.[0] ?? item.data.ArtistItems?.[0]?.Name,
         };
-        setCacheValue(`item3_${itemId}`, JSON.stringify(simpleItem));
+        setCacheValue(`item4_${itemId}`, JSON.stringify(simpleItem));
         return simpleItem;
       } catch {
         console.debug(`Item ${itemId} not found, skipping`);

@@ -30,6 +30,7 @@ import TopTenPage from "./components/pages/TopTenPage";
 import FirstWatchedPage from "./components/pages/FirstWatchedPage";
 import { useEffect } from "react";
 import ActivityCalendarPage from "./components/pages/ActivityCalendarPage";
+import SummaryPage from "./components/pages/SummaryPage";
 import Navigation from "./components/Navigation";
 import { LoadingPage } from "./components/pages/LoadingPage";
 
@@ -176,6 +177,10 @@ const router = createBrowserRouter([
       {
         path: "/punch-card",
         element: <ActivityCalendarPage />,
+      },
+      {
+        path: "/summary",
+        element: <SummaryPage />,
       },
       {
         path: "/TopTen",

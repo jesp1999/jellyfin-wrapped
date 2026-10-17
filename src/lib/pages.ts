@@ -10,7 +10,7 @@ export const PAGES = [
   P("/oldest-movie", "Oldest Movie", "movies"), P("/oldest-show", "Oldest Show", "shows"),
   P("/holidays", "Holiday Watching", "movies", "shows"), P("/minutes-per-day", "Minutes Per Day"),
   P("/show-of-the-month", "Show of the Month", "shows"), P("/unfinished-shows", "Unfinished Shows", "shows"),
-  P("/device-stats", "Device Stats"), P("/punch-card", "Activity Calendar"),
+  P("/device-stats", "Device Stats"), P("/punch-card", "Activity Calendar"), P("/summary", "Summary"),
 ];
 export const visiblePages = (kinds?: MediaKind[]) =>
   PAGES.filter((p) => !kinds || p.requires.length === 0 || p.requires.some((k) => kinds.includes(k)));
