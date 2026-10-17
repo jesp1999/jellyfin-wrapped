@@ -1,5 +1,5 @@
 import EmptyState from "../EmptyState";
-import { useRef } from "react";
+import { useContainerWidth } from "@/hooks/useContainerWidth";
 import { Container, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { useErrorBoundary } from "react-error-boundary";
@@ -22,7 +22,7 @@ const CHART_COLORS = {
 export default function DeviceStatsPage() {
   const { showBoundary } = useErrorBoundary();
   const { data: deviceStats, isLoading, error } = useDeviceStats();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerRef, containerWidth] = useContainerWidth();
 
   if (error) {
     showBoundary(error);
@@ -43,7 +43,6 @@ export default function DeviceStatsPage() {
     );
   }
 
-  const containerWidth = containerRef.current?.clientWidth || 600;
 
   const deviceData = deviceStats.deviceUsage.map(
     (d: { deviceName: string; minutes: number }) => ({

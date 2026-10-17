@@ -1,5 +1,5 @@
 import EmptyState from "../EmptyState";
-import { useRef } from "react";
+import { useContainerWidth } from "@/hooks/useContainerWidth";
 import { Container, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { useErrorBoundary } from "react-error-boundary";
@@ -23,7 +23,7 @@ const CHART_COLORS = {
 
 export default function MinutesPlayedPerDayPage() {
   const { showBoundary } = useErrorBoundary();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerRef, containerWidth] = useContainerWidth();
 
   const {
     data: playbackData,
@@ -56,7 +56,6 @@ export default function MinutesPlayedPerDayPage() {
     );
   }
 
-  const containerWidth = containerRef.current?.clientWidth || 600;
   const chartWidth = Math.min(containerWidth - 40, 800);
   const chartHeight = 300;
 
