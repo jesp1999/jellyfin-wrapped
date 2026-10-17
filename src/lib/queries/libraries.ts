@@ -1,10 +1,10 @@
 import { getAuthenticatedJellyfinApi } from "../jellyfin-api";
 import { getCurrentUserId } from "./utils";
-export type MediaKind = "movies" | "shows" | "music" | "musicVideos" | "books" | "audiobooks" | "liveTv";
+export type MediaKind = "movies" | "shows" | "music" | "musicVideos" | "liveTv";
 type Page = { Items?: { Id?: string; CollectionType?: string | null }[] };
-const BY_LIBRARY: Record<string, MediaKind[]> = { movies: ["movies"], tvshows: ["shows"], music: ["music"], musicvideos: ["musicVideos"], books: ["books", "audiobooks"], livetv: ["liveTv"] };
+const BY_LIBRARY: Record<string, MediaKind[]> = { movies: ["movies"], tvshows: ["shows"], music: ["music"], musicvideos: ["musicVideos"], livetv: ["liveTv"] };
 // Untyped ("mixed content") libraries are probed for what they hold.
-const BY_ITEM: Record<string, MediaKind> = { Movie: "movies", Series: "shows", Audio: "music", MusicVideo: "musicVideos", Book: "books", AudioBook: "audiobooks" };
+const BY_ITEM: Record<string, MediaKind> = { Movie: "movies", Series: "shows", Audio: "music", MusicVideo: "musicVideos" };
 // The kinds of library this user can see, or null if they cannot be listed (callers then show everything).
 export const getLibraryKinds = async (): Promise<MediaKind[] | null> => {
   try {
