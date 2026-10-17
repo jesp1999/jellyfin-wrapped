@@ -13,6 +13,8 @@ import { useMonthlyShowStats } from "../../hooks/queries/useMonthlyShowStats";
 import { useMinutesPlayedPerDay } from "../../hooks/queries/useMinutesPlayedPerDay";
 import { useDeviceStats } from "../../hooks/queries/useDeviceStats";
 import { useCalendar } from "../../hooks/queries/useCalendar";
+import { useLibraryKinds } from "../../hooks/queries/useLibraryKinds";
+import type { MediaKind } from "@/lib/queries/libraries";
 import { Container } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { Title } from "../ui/styled";
@@ -26,14 +28,16 @@ export function LoadingPage() {
 
   // Everything the pages show is loaded here, so later pages open without waiting.
   // Each step is one query; the bar is the share of them that have finished.
-  const steps = [
-    { message: "Counting your movies...", query: useMovies() },
-    { message: "Counting your shows...", query: useShows() },
-    { message: "Finding your favorite actors...", query: useFavoriteActors() },
-    { message: "Listening to your music...", query: useAudio() },
-    { message: "Checking live TV...", query: useLiveTvChannels() },
-    { message: "Finding unfinished shows...", query: useUnfinishedShows() },
-    { message: "Rolling the music videos...", query: useMusicVideos() },
+  const libraries = useLibraryKinds();
+  const allSteps: { message: string; query: { isPending: boolean }; kinds?: MediaKind[] }[] = [
+    { message: "Checking your libraries...", query: libraries },
+    { message: "Counting your movies...", query: useMovies(), kinds: ["movies"] },
+    { message: "Counting your shows...", query: useShows(), kinds: ["shows"] },
+    { message: "Finding your favorite actors...", query: useFavoriteActors(), kinds: ["movies"] },
+    { message: "Listening to your music...", query: useAudio(), kinds: ["music"] },
+    { message: "Checking live TV...", query: useLiveTvChannels(), kinds: ["liveTv"] },
+    { message: "Finding unfinished shows...", query: useUnfinishedShows(), kinds: ["shows"] },
+    { message: "Rolling the music videos...", query: useMusicVideos(), kinds: ["musicVideos"] },
     { message: "Reading your viewing patterns...", query: useViewingPatterns() },
     { message: "Punching your punch card...", query: usePunchCard() },
     { message: "Tallying up the episodes...", query: useMonthlyShowStats() },
@@ -41,6 +45,8 @@ export function LoadingPage() {
     { message: "Checking your devices...", query: useDeviceStats() },
     { message: "Filling in the calendar...", query: useCalendar() },
   ];
+  const kinds = libraries.data;
+  const steps = allSteps.filter((s) => !s.kinds || !kinds || s.kinds.some((k) => kinds.includes(k)));
 
   // A query that failed is finished too; its own page shows the error.
   const finished = steps.filter((step) => !step.query.isPending).length;

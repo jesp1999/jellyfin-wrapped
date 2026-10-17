@@ -27,7 +27,8 @@ export const TopTen = () => {
             <p style={{ fontSize: "1.125rem", color: "white", marginTop: "0.5rem" }}>{timeframe.description}</p>
           </div>
 
-          <Grid columns={{ initial: "1", md: "2" }} gap="6">
+          <Grid columns={{ initial: "1", md: data.movies.length && data.shows.length ? "2" : "1" }} gap="6">
+            {data.movies.length > 0 && (
             <div>
               <h2 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "1.5rem", color: "white" }}>
                 Top Movies
@@ -58,8 +59,9 @@ export const TopTen = () => {
                   </div>
                 ))}
               </div>
-            </div>
+            </div>)}
 
+            {data.shows.length > 0 && (
             <div>
               <h2 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "1.5rem", color: "white" }}>
                 Top Shows
@@ -100,7 +102,7 @@ export const TopTen = () => {
                   )
                 )}
               </div>
-            </div>
+            </div>)}
           </Grid>
         </Grid>
       </Container>

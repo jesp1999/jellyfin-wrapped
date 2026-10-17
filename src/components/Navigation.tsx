@@ -4,37 +4,20 @@ import { useQueryClient } from "@tanstack/react-query";
 import { styled } from "@stitches/react";
 import { motion } from "framer-motion";
 import TimeframeSelector from "./TimeframeSelector";
+import { visiblePages } from "@/lib/pages";
+import { useLibraryKinds } from "@/hooks/queries/useLibraryKinds";
 
-// Define navigation items with their paths and display names
-const navigationItems = [
-  { path: "/TopTen", name: "Top 10" },
-  { path: "/first-watched", name: "First Watched" },
-  { path: "/movies", name: "Movies" },
-  { path: "/shows", name: "TV Shows" },
-  { path: "/audio", name: "Music" },
-  { path: "/music-videos", name: "Music Videos" },
-  { path: "/actors", name: "Favorite Actors" },
-  { path: "/genres", name: "Genres" },
-  { path: "/tv", name: "Live TV" },
-  { path: "/critically-acclaimed", name: "Critically Acclaimed" },
-  { path: "/oldest-movie", name: "Oldest Movie" },
-  { path: "/oldest-show", name: "Oldest Show" },
-  { path: "/holidays", name: "Holiday Watching" },
-  { path: "/minutes-per-day", name: "Minutes Per Day" },
-  { path: "/show-of-the-month", name: "Show of the Month" },
-  { path: "/unfinished-shows", name: "Unfinished Shows" },
-  { path: "/device-stats", name: "Device Stats" },
-  { path: "/punch-card", name: "Activity Calendar" },
-];
 
 const Navigation = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const hidden = location.pathname === "/" || location.pathname === "/configure";
+  const { data: kinds } = useLibraryKinds(!hidden);
 
   // Don't show navigation on splash or configuration pages
-  if (location.pathname === "/" || location.pathname === "/configure") {
+  if (hidden) {
     return null;
   }
 
@@ -45,7 +28,7 @@ const Navigation = () => {
   const handleTimeframeChange = () => {
     // Every query reads the selected timeframe when it runs. Resetting them re-runs the
     // ones on screen now and the others the next time their page opens, with no reload.
-    void queryClient.resetQueries();
+    void queryClient.resetQueries({ predicate: (q) => q.queryKey[0] !== "libraryKinds" });
   };
 
   return (
@@ -68,7 +51,7 @@ const Navigation = () => {
         </TimeframeContainer>
 
         <NavList>
-          {navigationItems.map((item) => (
+          {visiblePages(kinds).map((item) => (
             <NavItem
               key={item.path}
               isActive={location.pathname === item.path}
