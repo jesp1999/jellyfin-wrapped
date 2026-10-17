@@ -89,9 +89,9 @@ export function PieChart({
   }, [data, colors, containerWidth]);
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 0 }}>
       <h3 style={{ textAlign: "center", marginBottom: "10px", color: "white" }}>{title}</h3>
-      <svg ref={ref} />
+      <svg ref={ref} style={{ display: "block", maxWidth: "100%" }} />
     </div>
   );
 }
