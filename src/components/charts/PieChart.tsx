@@ -20,8 +20,9 @@ export function PieChart({
     if (!ref.current || !data.length) return;
 
     const smallChart = containerWidth < 600;
-    const width = smallChart ? containerWidth - 40 : (containerWidth - 80) / 2;
-    const pieSize = Math.min(400, width);
+    const cell = smallChart ? containerWidth - 40 : (containerWidth - 80) / 2;
+    const pieSize = Math.max(200, Math.min(400, cell));
+    const width = pieSize;
     const radius = pieSize / 2;
     const height = pieSize + data.length * 20 + 16;
 
@@ -31,6 +32,7 @@ export function PieChart({
       .select(ref.current)
       .attr("width", width)
       .attr("height", height)
+      .attr("viewBox", `0 0 ${width} ${height}`)
       .append("g")
       .attr("transform", `translate(${width / 2},${pieSize / 2})`);
 
@@ -91,7 +93,7 @@ export function PieChart({
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 0 }}>
       <h3 style={{ textAlign: "center", marginBottom: "10px", color: "white" }}>{title}</h3>
-      <svg ref={ref} style={{ display: "block", maxWidth: "100%" }} />
+      <svg ref={ref} style={{ display: "block", maxWidth: "100%", height: "auto" }} />
     </div>
   );
 }
