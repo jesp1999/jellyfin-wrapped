@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { styled } from "@stitches/react";
@@ -15,8 +15,23 @@ const Navigation = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [warmups, setWarmups] = useState(0);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
   const hidden = location.pathname === "/" || location.pathname === "/configure";
   const { data: kinds } = useLibraryKinds(!hidden);
+
+  // While the menu is open, focus is in it and Escape closes it and returns focus to the toggle.
+  useEffect(() => {
+    if (!isOpen) return;
+    closeRef.current?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setIsOpen(false);
+      toggleRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [isOpen]);
 
   // Don't show navigation on splash or configuration pages
   if (hidden) {
@@ -41,17 +56,33 @@ const Navigation = () => {
   return (
     <>
       {warmups > 0 && <Warmup key={warmups} />}
-      <NavToggle onClick={toggleNav}>{isOpen ? "✕" : "☰"}</NavToggle>
+      <header>
+        <NavToggle
+          ref={toggleRef}
+          onClick={toggleNav}
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isOpen}
+          aria-controls="site-nav"
+        >
+          <span aria-hidden="true">{isOpen ? "✕" : "☰"}</span>
+        </NavToggle>
+      </header>
 
       <SideNav
         as={motion.div}
+        id="site-nav"
+        role="navigation"
+        aria-label="Main menu"
+        {...({ inert: !isOpen } as object)}
         initial={{ x: "-100%" }}
         animate={{ x: isOpen ? 0 : "-100%" }}
         transition={{ duration: 0.3 }}
       >
         <NavHeader>
           <NavTitle>Jellyfin Wrapped</NavTitle>
-          <CloseButton onClick={toggleNav}>✕</CloseButton>
+          <CloseButton ref={closeRef} onClick={toggleNav} aria-label="Close menu">
+            <span aria-hidden="true">✕</span>
+          </CloseButton>
         </NavHeader>
 
         <TimeframeContainer>
@@ -60,15 +91,16 @@ const Navigation = () => {
 
         <NavList>
           {visiblePages(kinds).map((item) => (
-            <NavItem
-              key={item.path}
-              isActive={location.pathname === item.path}
-              onClick={() => {
-                void navigate(item.path);
-                setIsOpen(false);
-              }}
-            >
-              {item.name}
+            <NavItem key={item.path} isActive={location.pathname === item.path}>
+              <NavLinkButton
+                aria-current={location.pathname === item.path ? "page" : undefined}
+                onClick={() => {
+                  void navigate(item.path);
+                  setIsOpen(false);
+                }}
+              >
+                {item.name}
+              </NavLinkButton>
             </NavItem>
           ))}
         </NavList>
@@ -99,7 +131,8 @@ const NavHeader = styled("div", {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  padding: "0 20px 20px",
+  // The left padding leaves room for the menu button, which floats over the top left corner.
+  padding: "0 20px 20px 72px",
   borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
   marginBottom: "20px",
 });
@@ -110,7 +143,7 @@ const TimeframeContainer = styled("div", {
   marginBottom: "20px",
 });
 
-const NavTitle = styled("h2", {
+const NavTitle = styled("p", {
   color: "#FFD700",
   margin: 0,
   fontSize: "1.5rem",
@@ -123,6 +156,8 @@ const CloseButton = styled("button", {
   color: "white",
   fontSize: "1.5rem",
   cursor: "pointer",
+  minWidth: "44px",
+  minHeight: "44px",
   padding: "5px",
   display: "flex",
   alignItems: "center",
@@ -139,10 +174,21 @@ const NavList = styled("ul", {
   flexGrow: 1,
 });
 
-const NavItem = styled("li", {
+const NavLinkButton = styled("button", {
+  display: "block",
+  width: "100%",
+  minHeight: "44px",
   padding: "12px 20px",
+  background: "none",
+  border: "none",
   color: "white",
+  font: "inherit",
+  textAlign: "left",
   cursor: "pointer",
+});
+
+const NavItem = styled("li", {
+  color: "white",
   transition: "all 0.2s ease",
   borderLeft: "4px solid transparent",
 
@@ -171,8 +217,8 @@ const NavToggle = styled("button", {
   color: "white",
   border: "none",
   borderRadius: "50%",
-  width: "40px",
-  height: "40px",
+  width: "44px",
+  height: "44px",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",

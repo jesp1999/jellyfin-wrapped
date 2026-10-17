@@ -51,7 +51,7 @@ export default function FirstWatchedPage() {
             <p
               style={{
                 fontSize: "1.125rem",
-                color: "var(--gray-11)",
+                color: "rgba(255, 255, 255, 0.92)",
                 marginTop: "0.5rem",
               }}
             >

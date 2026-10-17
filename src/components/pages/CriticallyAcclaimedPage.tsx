@@ -1,9 +1,9 @@
 import EmptyState from "../EmptyState";
+import { Panel } from "@/components/ui/Panel";
 import {
   Container,
   Grid,
   Text,
-  Card,
   Flex,
 } from "@radix-ui/themes";
 import { motion } from "framer-motion";
@@ -60,34 +60,34 @@ export default function CriticallyAcclaimedPage() {
             <Title as={motion.h1} variants={itemVariants}>
               Critically Acclaimed Content You Watched
             </Title>
-            <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginTop: "0.5rem" }}>
               Highly-rated movies and shows from your viewing history
             </p>
           </div>
 
           <Grid columns={{ initial: "1", sm: "2" }} gap="4">
             {topContent.map((content: TopContent) => (
-              <Card key={content.item.id}>
+              <Panel key={content.item.id}>
                 <Flex gap="4" align="center">
                   <ContentImage item={content.item} />
                   <Flex direction="column" gap="2">
                     <Text size="5" weight="bold">
                       {content.item.name}
                     </Text>
-                    <Text size="3" color="gray">
+                    <Text size="3">
                       {content.type === "movie" ? "Movie" : "TV Show"}
                     </Text>
-                    <Text size="4" weight="bold" color="amber">
+                    <Text size="4" weight="bold" style={{ color: "#FFD666" }}>
                       ⭐ {content.item.communityRating?.toFixed(1)} / 10
                     </Text>
                     {content.item.productionYear && (
-                      <Text size="2" color="gray">
+                      <Text size="2">
                         {content.item.productionYear}
                       </Text>
                     )}
                   </Flex>
                 </Flex>
-              </Card>
+              </Panel>
             ))}
           </Grid>
         </Grid>

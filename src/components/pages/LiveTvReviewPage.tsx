@@ -1,8 +1,8 @@
 import EmptyState from "../EmptyState";
+import { Panel } from "@/components/ui/Panel";
 import {
   Container,
   Grid,
-  Card,
   Text,
   Flex,
 } from "@radix-ui/themes";
@@ -29,16 +29,16 @@ function ChannelCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card size="2">
+      <Panel>
         <Flex direction="column" gap="2">
           <Text size="5" weight="bold">
             {channelName}
           </Text>
-          <Text size="2" color="gray">
+          <Text size="2">
             Watch time: {formatDuration(duration)}
           </Text>
         </Flex>
-      </Card>
+      </Panel>
     </motion.div>
   );
 }
@@ -79,7 +79,7 @@ export default function LiveTvReviewPage() {
             <Title as={motion.h1}>
               You Watched {sortedChannels.length} Live TV Channels
             </Title>
-            <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginTop: "0.5rem" }}>
               Your live television viewing across different channels
             </p>
           </div>

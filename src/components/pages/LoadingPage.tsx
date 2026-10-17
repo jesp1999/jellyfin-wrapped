@@ -41,6 +41,7 @@ export function LoadingPage() {
           <div style={{ maxWidth: "400px", margin: "0 auto" }}>
             <div
               role="progressbar"
+              aria-label="Loading your stats"
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={progress}
@@ -63,6 +64,9 @@ export function LoadingPage() {
             </div>
             <p style={{ color: "white", marginTop: "1rem", fontSize: "1.2rem" }}>
               {progress}%
+            </p>
+            <p role="status" className="wrapped-sr-only">
+              {current?.message ?? "All done!"} {progress}%
             </p>
           </div>
         </div>

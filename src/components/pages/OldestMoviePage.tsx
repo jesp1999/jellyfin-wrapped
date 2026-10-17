@@ -52,7 +52,7 @@ export default function OldestMoviePage() {
             <Title as={motion.h1} variants={itemVariants}>
               Oldest Movie You Watched
             </Title>
-            <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginTop: "0.5rem" }}>
               The most vintage film in your viewing history
             </p>
             <Subtitle as={motion.p} variants={itemVariants}>

@@ -10,6 +10,8 @@ interface MovieCardProps {
   playbackTime?: number;
   episodeCount?: number;
   onHide?: () => void;
+  // Heading level of the title: 2 under the page title, 3 under a section heading.
+  headingLevel?: 2 | 3;
 }
 
 export function MovieCard({
@@ -17,7 +19,9 @@ export function MovieCard({
   playbackTime,
   episodeCount,
   onHide,
+  headingLevel = 2,
 }: MovieCardProps) {
+  const Heading = headingLevel === 3 ? "h3" : "h2";
   const [imageUrl, setImageUrl] = useState<string>();
   const [ref, seen] = useInView<HTMLDivElement>();
   useEffect(() => {
@@ -36,10 +40,11 @@ export function MovieCard({
 
   return (
     <div className="bg-card rounded-lg shadow-lg overflow-hidden">
-      <div ref={ref} className="aspect-[2/3] relative">
+      <div ref={ref} className="aspect-[2/3] relative" style={{ position: "relative" }}>
         <Avatar
           size="8"
           src={imageUrl}
+          alt=""
           fallback={item.name?.[0] || "?"}
           className="w-full h-full"
           style={{
@@ -49,21 +54,33 @@ export function MovieCard({
             height: "100%",
           }}
         />
+        {onHide && (
+          <button
+            type="button"
+            aria-label={`Hide ${item.name ?? "this title"}`}
+            onClick={onHide}
+            style={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              width: 44,
+              height: 44,
+              borderRadius: "50%",
+              border: "1px solid rgba(255, 255, 255, 0.7)",
+              background: "rgba(0, 0, 0, 0.65)",
+              color: "white",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+            }}
+          >
+            <Trash2 size={18} aria-hidden="true" />
+          </button>
+        )}
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-lg">
-          {item.name}{" "}
-          {onHide && (
-            <Trash2
-              size={16}
-              onClick={(e) => {
-                e.stopPropagation();
-                onHide();
-              }}
-              className="w-5 h-5 text-white"
-            />
-          )}
-        </h3>
+        <Heading className="font-semibold text-lg">{item.name}</Heading>
         <p className="text-sm text-muted-foreground">
           {item.productionYear && `Released: ${item.productionYear}`}
         </p>

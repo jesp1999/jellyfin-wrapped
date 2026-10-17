@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import { ChartAlt } from "./ChartAlt";
 
 type PieChartData = { name: string; minutes: number };
 
@@ -92,8 +93,9 @@ export function PieChart({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 0 }}>
-      <h3 style={{ textAlign: "center", marginBottom: "10px", color: "white" }}>{title}</h3>
-      <svg ref={ref} style={{ display: "block", maxWidth: "100%", height: "auto" }} />
+      <h2 style={{ textAlign: "center", marginBottom: "10px", color: "white", fontSize: "1.17em" }}>{title}</h2>
+      <svg ref={ref} aria-hidden="true" style={{ display: "block", maxWidth: "100%", height: "auto" }} />
+      <ChartAlt caption={`${title}, hours watched`} rows={data.map((d) => [d.name, `${Math.round(d.minutes / 60)} hours`])} />
     </div>
   );
 }

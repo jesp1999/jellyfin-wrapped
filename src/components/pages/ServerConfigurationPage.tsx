@@ -117,13 +117,14 @@ const ServerConfigurationPage = () => {
   const inputStyle = {
     width: "100%",
     padding: "10px",
+    minHeight: "44px",
     fontSize: "16px",
     borderRadius: "6px",
     border: "1px solid #ccc",
   };
 
   return (
-    <Container>
+    <Container as="main" id="main" tabIndex={-1}>
       <StyledCard asChild>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -200,7 +201,8 @@ const ServerConfigurationPage = () => {
                     <Button
                       type="button"
                       variant="soft"
-                      size="1"
+                      size="2"
+                      style={{ minHeight: 44 }}
                       onClick={() => setUseAuthToken(!useAuthToken)}
                     >
                       {useAuthToken
@@ -265,7 +267,7 @@ const ServerConfigurationPage = () => {
               </Flex>
 
               {error && <Text role="alert" size="2" color="red">{error}</Text>}
-              <StyledButton size="3" disabled={isLoading}>
+              <StyledButton size="3" disabled={isLoading} style={{ minHeight: 44 }}>
                 {isLoading ? "Connecting..." : "Connect to Server"}
               </StyledButton>
             </Flex>

@@ -41,7 +41,7 @@ const SplashPage = () => {
   };
 
   return (
-    <Container>
+    <Container as="main" id="main" tabIndex={-1}>
       <motion.div
         style={{ maxWidth: "800px", textAlign: "center", padding: "40px" }}
         variants={containerVariants}

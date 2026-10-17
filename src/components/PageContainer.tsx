@@ -32,7 +32,7 @@ const PageContainer = ({
   shareable = true,
 }: PageContainerProps) => {
   const navigate = useNavigate();
-  const pageRef = useRef<HTMLDivElement>(null);
+  const pageRef = useRef<HTMLElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const { pathname } = useLocation();
@@ -65,11 +65,21 @@ const PageContainer = ({
     }
   };
 
+  // The dark tint keeps white text at 4.5:1 or better on every page colour.
   return (
-    <Box ref={boxRef} style={{ backgroundColor, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <div ref={pageRef} style={{ flex: 1, paddingBottom: "5rem" }}>
+    <Box
+      ref={boxRef}
+      style={{
+        backgroundColor: `color-mix(in srgb, ${backgroundColor} 58%, black)`,
+        color: "white",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <main ref={pageRef} id="main" tabIndex={-1} style={{ flex: 1, paddingBottom: "5rem" }}>
         {children}
-      </div>
+      </main>
       {card && (
         <div aria-hidden style={{ position: "fixed", left: -10000, top: 0, pointerEvents: "none" }}>
           <div ref={cardRef}>{card}</div>
@@ -77,12 +87,13 @@ const PageContainer = ({
       )}
 
       {(nextPage || previousPage) && (
-        <NavButtonContainer>
+        <NavButtonContainer aria-label="Page navigation">
           <Flex gap="2" style={{ width: "100%" }}>
             {previousPage && (
               <Button
                 size={"4"}
                 color="gray"
+                highContrast
                 style={{ flex: 1 }}
                 onClick={() => {
                   void navigate(previousPage);
@@ -96,6 +107,7 @@ const PageContainer = ({
               <Button
                 size={"4"}
                 color={done ? "green" : undefined}
+                highContrast={done}
                 style={{ flex: 1 }}
                 onClick={() => {
                   void navigate(nextPage);
@@ -111,7 +123,7 @@ const PageContainer = ({
   );
 };
 
-const NavButtonContainer = styled("div", {
+const NavButtonContainer = styled("nav", {
   position: "fixed",
   bottom: 0,
   left: 0,

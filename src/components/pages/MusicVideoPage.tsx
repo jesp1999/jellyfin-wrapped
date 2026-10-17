@@ -42,7 +42,7 @@ export default function MusicVideoPage() {
             <Title as={motion.h1} variants={itemVariants}>
               You Listened to {musicVideos.length} Music Videos
             </Title>
-            <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginTop: "0.5rem" }}>
               Your music video viewing collection
             </p>
           </div>

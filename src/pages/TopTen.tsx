@@ -58,7 +58,7 @@ export const TopTen = () => {
                       <h3 style={{ fontWeight: 600, fontSize: "1.125rem", color: "white" }}>
                         {movie.item.name}
                       </h3>
-                      <p style={{ fontSize: "0.875rem", color: "rgba(255, 255, 255, 0.7)" }}>
+                      <p style={{ fontSize: "0.875rem", color: "rgba(255, 255, 255, 0.92)" }}>
                         {formatWatchTime(movie.playbackTime / 60)}
                       </p>
                     </div>
@@ -99,7 +99,7 @@ export const TopTen = () => {
                         <h3 style={{ fontWeight: 600, fontSize: "1.125rem", color: "white" }}>
                           {show.item.name}
                         </h3>
-                        <p style={{ fontSize: "0.875rem", color: "rgba(255, 255, 255, 0.7)" }}>
+                        <p style={{ fontSize: "0.875rem", color: "rgba(255, 255, 255, 0.92)" }}>
                           {show.episodeCount} episodes •{" "}
                           {formatWatchTime(show.playbackTime / 60)}
                         </p>

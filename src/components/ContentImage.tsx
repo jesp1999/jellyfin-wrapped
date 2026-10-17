@@ -29,6 +29,7 @@ export function ContentImage({ item }: { item: SimpleItemDto }) {
       <Avatar
         size="8"
         src={imageUrl}
+        alt=""
         fallback={item.name?.[0] || "?"}
         style={{ aspectRatio: "2/3", width: "100%", height: "100%" }}
       />

@@ -45,7 +45,7 @@ export function ShareButton({ capture }: { capture: () => Promise<Blob> }) {
 
   return (
     <>
-      <Button size="4" color="gray" aria-label="Share this page" disabled={busy} onClick={() => void start()}>
+      <Button size="4" color="gray" highContrast aria-label="Share this page" aria-busy={busy} disabled={busy} onClick={() => void start()}>
         {busy ? "…" : <Share2 size={20} />}
       </Button>
       <Dialog.Root open={!!shot || failed} onOpenChange={(open) => !open && close()}>

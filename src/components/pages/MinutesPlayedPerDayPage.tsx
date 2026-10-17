@@ -8,6 +8,7 @@ import { itemVariants } from "@/lib/styled-variants";
 import { useMinutesPlayedPerDay } from "@/hooks/queries/useMinutesPlayedPerDay";
 import { useViewingPatterns } from "@/hooks/queries/useViewingPatterns";
 import { LoadingSpinner } from "../LoadingSpinner";
+import { ChartAlt } from "../charts/ChartAlt";
 import { LineChart } from "../charts/LineChart";
 import { BarChart } from "../charts/BarChart";
 import PageContainer from "../PageContainer";
@@ -97,7 +98,7 @@ export default function MinutesPlayedPerDayPage() {
             <Title as={motion.h1} variants={itemVariants}>
               Your Viewing Activity
             </Title>
-            <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginTop: "0.5rem" }}>
               See when you watch the most throughout the day and week
             </p>
             <p style={{ fontSize: "1.5rem", marginTop: "1rem" }}>
@@ -106,9 +107,9 @@ export default function MinutesPlayedPerDayPage() {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <h3 style={{ textAlign: "center", marginBottom: "1rem" }}>
+            <h2 style={{ textAlign: "center", marginBottom: "1rem", fontSize: "1.17em" }}>
               Daily Activity
-            </h3>
+            </h2>
             <LineChart
               data={activityData}
               width={chartWidth}
@@ -117,13 +118,18 @@ export default function MinutesPlayedPerDayPage() {
               yLabel="Minutes"
               lineColor={CHART_COLORS.activity.line}
               areaColor={CHART_COLORS.activity.area}
+              alt={
+                <ChartAlt
+                  caption={`Daily activity over ${sortedData.length} days: ${totalHours} hours in total, an average of ${Math.round(totalMinutes / Math.max(sortedData.length, 1))} minutes a day, and a peak of ${Math.max(...sortedData.map((d: { minutes: number }) => d.minutes))} minutes in one day.`}
+                />
+              }
             />
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <h3 style={{ textAlign: "center", marginBottom: "1rem" }}>
+            <h2 style={{ textAlign: "center", marginBottom: "1rem", fontSize: "1.17em" }}>
               Time of Day
-            </h3>
+            </h2>
             <LineChart
               data={timeOfDayData}
               width={chartWidth}
@@ -132,13 +138,19 @@ export default function MinutesPlayedPerDayPage() {
               yLabel="Minutes"
               lineColor={CHART_COLORS.timeOfDay.line}
               areaColor={CHART_COLORS.timeOfDay.area}
+              alt={
+                <ChartAlt
+                  caption="Minutes watched in each hour of the day"
+                  rows={timeOfDayData.map((d: { x: number; y: number }) => [`${d.x}:00`, `${d.y} minutes`])}
+                />
+              }
             />
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <h3 style={{ textAlign: "center", marginBottom: "1rem" }}>
+            <h2 style={{ textAlign: "center", marginBottom: "1rem", fontSize: "1.17em" }}>
               Day of Week
-            </h3>
+            </h2>
             <BarChart
               data={dayOfWeekData}
               width={chartWidth}
@@ -146,6 +158,12 @@ export default function MinutesPlayedPerDayPage() {
               xLabel="Day"
               yLabel="Minutes"
               barColor={CHART_COLORS.dayOfWeek.bar}
+              alt={
+                <ChartAlt
+                  caption="Minutes watched on each day of the week"
+                  rows={dayOfWeekData.map((d: { label: string; value: number }) => [d.label, `${d.value} minutes`])}
+                />
+              }
             />
           </div>
         </Grid>

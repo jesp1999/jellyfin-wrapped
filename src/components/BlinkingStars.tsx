@@ -1,12 +1,16 @@
 import { memo } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 function BlinkingStars() {
+  // Decorative and endless, so it is left out for people who ask for less motion.
+  const reduce = useReducedMotion();
+  if (reduce) return null;
   return (
     <AnimatePresence>
       {[...Array<number>(20)].map((_, i) => (
         <motion.div
           key={i}
+          aria-hidden="true"
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 0.7, scale: 1 }}
           exit={{ opacity: 0, scale: 0 }}

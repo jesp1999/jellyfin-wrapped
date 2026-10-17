@@ -69,7 +69,7 @@ export default function GenreReviewPage() {
             <Title as={motion.h1} variants={itemVariants}>
               Your Top Genre: {topGenreData.genre}
             </Title>
-            <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginTop: "0.5rem" }}>
               The genre you watched most in this period
             </p>
             <p style={{ fontSize: "1.5rem", color: "white", marginTop: "0.5rem" }}>

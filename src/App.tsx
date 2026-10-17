@@ -1,6 +1,8 @@
 import "@radix-ui/themes/styles.css";
 import { ErrorBoundary } from "react-error-boundary";
 import { Theme } from "@radix-ui/themes";
+import { MotionConfig, useReducedMotion } from "framer-motion";
+import { PAGES } from "./lib/pages";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -28,7 +30,7 @@ import UnfinishedShowsPage from "./components/pages/UnfinishedShowsPage";
 import CriticallyAcclaimedPage from "./components/pages/CriticallyAcclaimedPage";
 import TopTenPage from "./components/pages/TopTenPage";
 import FirstWatchedPage from "./components/pages/FirstWatchedPage";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import ActivityCalendarPage from "./components/pages/ActivityCalendarPage";
 import SummaryPage from "./components/pages/SummaryPage";
 import Navigation from "./components/Navigation";
@@ -57,18 +59,41 @@ const queryClient = new QueryClient({
   },
 });
 
-// Layout component that wraps all routes
-function ScrollToTop() {
+const ROUTE_NAMES: Record<string, string> = {
+  "/": "Welcome",
+  "/configure": "Connect to Jellyfin",
+  "/loading": "Loading your stats",
+};
+
+// On every route change: scroll to the top, set the tab title, move focus to the page content
+// and announce the page, so keyboard and screen reader users are not left on the old page.
+function RouteEffects() {
   const { pathname } = useLocation();
+  const reduce = useReducedMotion();
+  const [announcement, setAnnouncement] = useState("");
+  const firstRoute = useRef(true);
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }, [pathname]);
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    const name = PAGES.find((p) => p.path === pathname)?.name ?? ROUTE_NAMES[pathname] ?? "Jellyfin Wrapped";
+    document.title = `${name} · Jellyfin Wrapped`;
+    setAnnouncement(name);
+    const focusMain = () => {
+      // Only when focus was lost with the old page; never take it from something the user is using.
+      if (document.activeElement && document.activeElement !== document.body) return;
+      document.getElementById("main")?.focus({ preventScroll: true });
+    };
+    // Not on the first load, so the skip link is the first thing Tab reaches.
+    const timers = firstRoute.current ? [] : [setTimeout(focusMain, 50), setTimeout(focusMain, 800)];
+    firstRoute.current = false;
+    return () => timers.forEach(clearTimeout);
+  }, [pathname, reduce]);
 
-  return null;
+  return (
+    <div role="status" aria-live="polite" className="wrapped-sr-only">
+      {announcement}
+    </div>
+  );
 }
 
 function RootLayout() {
@@ -76,19 +101,31 @@ function RootLayout() {
     <ErrorBoundary
       onError={(e) => console.error(e)}
       fallbackRender={() => (
-        <div style={{ minHeight: "100vh", display: "grid", placeContent: "center", gap: "1rem", textAlign: "center", background: "#2D00F7", color: "white", padding: "1rem" }}>
+        <main id="main" style={{ minHeight: "100vh", display: "grid", placeContent: "center", gap: "1rem", textAlign: "center", background: "#2D00F7", color: "white", padding: "1rem" }}>
           <h1>Something went wrong</h1>
           <p>Your stats could not be loaded. Check your connection and try again.</p>
           <button onClick={() => window.location.assign("/")}>Start over</button>
-        </div>
+        </main>
       )}
     >
-      <ScrollToTop />
+      <a
+        className="wrapped-skip-link"
+        href="#main"
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById("main")?.focus();
+        }}
+      >
+        Skip to content
+      </a>
+      <RouteEffects />
       <QueryClientProvider client={queryClient}>
-        <Theme>
-          <Navigation />
-          <Outlet />
-        </Theme>
+        <MotionConfig reducedMotion="user">
+          <Theme>
+            <Navigation />
+            <Outlet />
+          </Theme>
+        </MotionConfig>
       </QueryClientProvider>
     </ErrorBoundary>
   );

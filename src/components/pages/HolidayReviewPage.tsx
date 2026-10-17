@@ -87,7 +87,7 @@ export default function HolidayReviewPage() {
             <Title as={motion.h1} variants={itemVariants}>
               What You Watched on Holidays
             </Title>
-            <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginTop: "0.5rem" }}>
               Your viewing activity during special occasions
             </p>
           </div>

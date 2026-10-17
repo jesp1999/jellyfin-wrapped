@@ -43,11 +43,11 @@ export default function AudioReviewPage() {
             <Title as={motion.h1} variants={itemVariants}>
               You Listened to {audios.length} Songs
             </Title>
-            <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginTop: "0.5rem" }}>
               Your music listening history
             </p>
             {audios.length > MAX_DISPLAY_ITEMS && (
-              <p style={{ color: "var(--gray-12)" }}>
+              <p style={{ color: "white" }}>
                 Showing top {MAX_DISPLAY_ITEMS} songs
               </p>
             )}

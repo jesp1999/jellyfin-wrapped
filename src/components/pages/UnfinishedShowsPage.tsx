@@ -1,6 +1,7 @@
 import EmptyState from "../EmptyState";
+import { Panel } from "@/components/ui/Panel";
 import { useEffect, useState } from "react";
-import { Container, Grid, Card, Text } from "@radix-ui/themes";
+import { Container, Grid, Text } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { useErrorBoundary } from "react-error-boundary";
 import { useUnfinishedShows } from "@/hooks/queries/useUnfinishedShows";
@@ -67,14 +68,14 @@ export default function UnfinishedShowsPage() {
             <Title as={motion.h1} variants={itemVariants}>
               Shows You Started But Haven't Finished
             </Title>
-            <Text size="4" color="gray" style={{ marginTop: "8px" }}>
+            <Text size="4" style={{ marginTop: "8px" }}>
               Series you began watching but haven't completed yet
             </Text>
           </div>
 
           <Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="4">
             {showsWithPosters.slice(0, 12).map((show: ShowWithPoster) => (
-              <Card key={show.item.id}>
+              <Panel key={show.item.id}>
                 {show.posterUrl && (
                   <img
                     src={show.posterUrl}
@@ -86,14 +87,14 @@ export default function UnfinishedShowsPage() {
                   <Text size="4" weight="bold">
                     {show.item.name}
                   </Text>
-                  <Text size="2" color="gray">
+                  <Text size="2">
                     {show.watchedEpisodes} / {show.totalEpisodes} episodes
                   </Text>
-                  <Text size="1" color="gray">
+                  <Text size="1">
                     Last watched: {format(show.lastWatchedDate, "MMM d, yyyy")}
                   </Text>
                 </div>
-              </Card>
+              </Panel>
             ))}
           </Grid>
         </Grid>

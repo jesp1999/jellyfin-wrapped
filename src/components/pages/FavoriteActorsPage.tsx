@@ -51,7 +51,7 @@ export default function FavoriteActorsPage() {
             <Title as={motion.h1} variants={itemVariants}>
               Your Favorite Actors
             </Title>
-            <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginTop: "0.5rem" }}>
               The performers who appeared most in what you watched
             </p>
           </div>

@@ -46,20 +46,33 @@ const TimeframeSelector: React.FC<TimeframeSelectorProps> = ({
       }
     };
 
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsOpen(false);
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, []);
 
   return (
     <SelectorContainer className="timeframe-selector">
-      <CurrentSelection onClick={() => setIsOpen(!isOpen)}>
+      <CurrentSelection
+        type="button"
+        aria-haspopup="true"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <span>{selectedTimeframe.name}</span>
         <TimeframeDescription>
           {describe(selectedTimeframe)}
         </TimeframeDescription>
-        <DropdownIcon isOpen={isOpen}>▼</DropdownIcon>
+        <DropdownIcon as="span" aria-hidden="true" isOpen={isOpen}>
+          ▼
+        </DropdownIcon>
       </CurrentSelection>
       {earliest && selectedTimeframe.id !== "all-time" && differenceInDays(earliest, selectedTimeframe.startDate) > 14 && (
         <Hint>History starts {format(earliest, "MMM d, yyyy")}. If that looks too recent, ask the server owner to check the Playback Reporting retention.</Hint>
@@ -76,6 +89,8 @@ const TimeframeSelector: React.FC<TimeframeSelectorProps> = ({
           {timeframes.map((timeframe) => (
             <DropdownItem
               key={timeframe.id}
+              type="button"
+              aria-current={timeframe.id === selectedTimeframe.id ? "true" : undefined}
               isSelected={timeframe.id === selectedTimeframe.id}
               onClick={() => handleTimeframeSelect(timeframe)}
             >
@@ -99,8 +114,12 @@ const SelectorContainer = styled("div", {
   zIndex: 100,
 });
 
-const CurrentSelection = styled("div", {
+const CurrentSelection = styled("button", {
   display: "flex",
+  width: "100%",
+  font: "inherit",
+  textAlign: "left",
+  color: "white",
   flexDirection: "column",
   padding: "10px 15px",
   backgroundColor: "rgba(255, 255, 255, 0.15)",
@@ -121,7 +140,7 @@ const CurrentSelection = styled("div", {
 });
 
 const TimeframeDescription = styled("small", {
-  color: "rgba(255, 255, 255, 0.7)",
+  color: "rgba(255, 255, 255, 0.92)",
   fontSize: "0.8rem",
   marginTop: "2px",
 });
@@ -166,7 +185,13 @@ const DropdownMenu = styled("div", {
   border: "1px solid rgba(255, 255, 255, 0.1)",
 });
 
-const DropdownItem = styled("div", {
+const DropdownItem = styled("button", {
+  width: "100%",
+  minHeight: "44px",
+  border: "none",
+  background: "transparent",
+  font: "inherit",
+  textAlign: "left",
   padding: "10px 15px",
   cursor: "pointer",
   transition: "all 0.2s ease",

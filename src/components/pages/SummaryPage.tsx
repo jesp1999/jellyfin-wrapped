@@ -64,6 +64,7 @@ export default function SummaryPage() {
   return (
     <PageContainer backgroundColor="var(--indigo-8)" shareRef={cardRef}>
       <Container size="1" p="4">
+        <h1 className="wrapped-sr-only">Your summary: {timeframe.name}</h1>
         <div
           ref={cardRef}
           style={{

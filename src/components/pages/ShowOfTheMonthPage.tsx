@@ -1,6 +1,7 @@
 import EmptyState from "../EmptyState";
+import { Panel } from "@/components/ui/Panel";
 import { useEffect, useState } from "react";
-import { Container, Grid, Card, Text } from "@radix-ui/themes";
+import { Container, Grid, Text } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 
 import { useErrorBoundary } from "react-error-boundary";
@@ -77,14 +78,14 @@ export default function ShowOfTheMonthPage() {
             <Title as={motion.h1} variants={itemVariants}>
               Your Top Show Each Month
             </Title>
-            <Text size="4" color="gray" style={{ marginTop: "8px" }}>
+            <Text size="4" style={{ marginTop: "8px" }}>
               The show you watched the most in each month
             </Text>
           </div>
 
           <Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="4">
             {statsWithPosters.map((stat: MonthlyShowStats) => (
-              <Card key={stat.month.toISOString()}>
+              <Panel key={stat.month.toISOString()}>
                 {stat.posterUrl && (
                   <img
                     src={stat.posterUrl}
@@ -99,11 +100,11 @@ export default function ShowOfTheMonthPage() {
                   <Text size="4" weight="bold">
                     {stat.topShow.item.name}
                   </Text>
-                  <Text size="2" color="gray">
+                  <Text size="2">
                     {formatWatchTime(stat.topShow.watchTimeMinutes)}
                   </Text>
                 </div>
-              </Card>
+              </Panel>
             ))}
           </Grid>
         </Grid>

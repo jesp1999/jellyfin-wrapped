@@ -41,6 +41,7 @@ export function ActorCard({
         <Avatar
           size="8"
           src={imageUrl}
+          alt=""
           fallback={details.Name?.[0] || "?"}
           className="w-full h-full"
           style={{
@@ -52,15 +53,15 @@ export function ActorCard({
         />
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-lg">{name}</h3>
+        <h2 className="font-semibold text-lg">{name}</h2>
         {count > 0 && (
           <>
             <p className="text-sm text-muted-foreground">
               You watched {name} {count} times
             </p>
             <ul>
-              {[...seenInMovies, ...seenInShows].map((itemDto) => (
-                <li>{itemDto.name}</li>
+              {[...seenInMovies, ...seenInShows].map((itemDto, i) => (
+                <li key={`${itemDto.id}-${i}`}>{itemDto.name}</li>
               ))}
             </ul>
           </>

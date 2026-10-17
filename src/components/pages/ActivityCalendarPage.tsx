@@ -8,6 +8,7 @@ import { Title } from "../ui/styled";
 import { motion } from "framer-motion";
 import { useCalendar } from "@/hooks/queries/useCalendar";
 import { LoadingSpinner } from "../LoadingSpinner";
+import { ChartAlt } from "../charts/ChartAlt";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import PageContainer from "../PageContainer";
 
@@ -36,13 +37,13 @@ export default function ActivityCalendarPage() {
     <PageContainer backgroundColor="var(--indigo-8)" nextPage={NEXT_PAGE} previousPage="/device-stats">
       <Container size="4" p="4">
         <Card className="p-6">
-          <Title as={motion.h2} className="text-2xl font-bold mb-4">
+          <Title as={motion.h1} className="text-2xl font-bold mb-4">
             Your Viewing Activity
           </Title>
-          <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginBottom: "1rem" }}>
+          <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginBottom: "1rem" }}>
             A calendar view of your daily viewing patterns
           </p>
-          <div style={{ height: (isMobile ? 150 : 250) * (Number(toDate.slice(0, 4)) - Number(fromDate.slice(0, 4)) + 1) }}>
+          <div aria-hidden="true" style={{ height: (isMobile ? 150 : 250) * (Number(toDate.slice(0, 4)) - Number(fromDate.slice(0, 4)) + 1) }}>
             <ResponsiveCalendar
               data={data ?? []}
               from={fromDate}
@@ -58,8 +59,18 @@ export default function ActivityCalendarPage() {
               monthBorderColor="#ffffff"
               dayBorderWidth={2}
               dayBorderColor="#ffffff"
+              theme={{ text: { fill: "#ffffff" } }}
             />
           </div>
+          <ChartAlt
+            caption={(() => {
+              const watched = (data ?? []).filter((d: { value: number }) => d.value > 0);
+              const busiest = watched.reduce((a: { value: number; day: string }, b: { value: number; day: string }) => (b.value > a.value ? b : a), watched[0]);
+              return watched.length
+                ? `You watched on ${watched.length} days. Your busiest day was ${busiest.day}, with ${busiest.value} minutes.`
+                : "No viewing activity in this timeframe.";
+            })()}
+          />
         </Card>
       </Container>
     </PageContainer>

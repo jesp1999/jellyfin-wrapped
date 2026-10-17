@@ -56,7 +56,7 @@ export default function ShowReviewPage() {
             <Title as={motion.h1} variants={itemVariants}>
               You Watched {visibleShows.length} Shows
             </Title>
-            <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginTop: "0.5rem" }}>
               All the TV series you enjoyed in this period
             </p>
           </div>

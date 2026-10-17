@@ -6,16 +6,19 @@ export function LoadingSpinner({
   backgroundColor?: string;
 }) {
   return (
-    <div
+    <main
       style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         minHeight: "100vh",
-        backgroundColor,
+        backgroundColor: `color-mix(in srgb, ${backgroundColor} 58%, black)`,
       }}
     >
-      <Spinner size="3" />
-    </div>
+      <span role="status">
+        <Spinner size="3" />
+        <span className="wrapped-sr-only">Loading</span>
+      </span>
+    </main>
   );
 }

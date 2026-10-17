@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import type { ReactNode } from "react";
 
 type LineChartData = { x: number; y: number };
 
@@ -11,6 +12,7 @@ export function LineChart({
   yLabel,
   lineColor,
   areaColor,
+  alt,
 }: {
   data: LineChartData[];
   width: number;
@@ -19,6 +21,8 @@ export function LineChart({
   yLabel: string;
   lineColor: string;
   areaColor: string;
+  // Text version of the chart for screen readers.
+  alt?: ReactNode;
 }) {
   const ref = useRef<SVGSVGElement>(null);
 
@@ -92,5 +96,10 @@ export function LineChart({
       .text(yLabel);
   }, [data, width, height, xLabel, yLabel, lineColor, areaColor]);
 
-  return <svg ref={ref} />;
+  return (
+    <>
+      <svg ref={ref} aria-hidden="true" />
+      {alt}
+    </>
+  );
 }

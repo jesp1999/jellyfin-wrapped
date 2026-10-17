@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import type { ReactNode } from "react";
 
 type BarChartData = { label: string; value: number };
 
@@ -10,6 +11,7 @@ export function BarChart({
   xLabel,
   yLabel,
   barColor,
+  alt,
 }: {
   data: BarChartData[];
   width: number;
@@ -17,6 +19,8 @@ export function BarChart({
   xLabel: string;
   yLabel: string;
   barColor: string;
+  // Text version of the chart for screen readers.
+  alt?: ReactNode;
 }) {
   const ref = useRef<SVGSVGElement>(null);
 
@@ -81,5 +85,10 @@ export function BarChart({
       .text(yLabel);
   }, [data, width, height, xLabel, yLabel, barColor]);
 
-  return <svg ref={ref} />;
+  return (
+    <>
+      <svg ref={ref} aria-hidden="true" />
+      {alt}
+    </>
+  );
 }
