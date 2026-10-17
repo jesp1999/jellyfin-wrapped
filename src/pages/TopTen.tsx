@@ -33,9 +33,9 @@ export const TopTen = () => {
                 Top Movies
               </h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                {data.movies.map((movie: SimpleItemDto, index: number) => (
+                {data.movies.map((movie: { item: SimpleItemDto; playbackTime: number }, index: number) => (
                   <div
-                    key={movie.id}
+                    key={movie.item.id}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -46,13 +46,13 @@ export const TopTen = () => {
                     }}
                   >
                     <RankBadge rank={index + 1} />
-                    <ContentImage item={movie} />
+                    <ContentImage item={movie.item} />
                     <div style={{ flex: 1 }}>
                       <h3 style={{ fontWeight: 600, fontSize: "1.125rem", color: "white" }}>
-                        {movie.name}
+                        {movie.item.name}
                       </h3>
                       <p style={{ fontSize: "0.875rem", color: "rgba(255, 255, 255, 0.7)" }}>
-                        {formatWatchTime((movie.durationSeconds ?? 0) / 60)}
+                        {formatWatchTime(movie.playbackTime / 60)}
                       </p>
                     </div>
                   </div>
