@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { styled } from "@stitches/react";
 import { motion } from "framer-motion";
 import TimeframeSelector from "./TimeframeSelector";
-import { visiblePages } from "@/lib/pages";
+import { PAGES, visiblePages } from "@/lib/pages";
 import { useLibraryKinds } from "@/hooks/queries/useLibraryKinds";
 import { Warmup } from "./Warmup";
 
@@ -33,6 +33,9 @@ const Navigation = () => {
     void queryClient.resetQueries({ predicate: (q) => q.queryKey[0] !== "libraryKinds" });
     // ...and load the rest now, in the background, instead of when each page is opened.
     setWarmups((n) => n + 1);
+    // The page open now may not fit the new timeframe.
+    const here = location.pathname;
+    if (PAGES.some((p) => p.path === here) && !visiblePages(kinds).some((p) => p.path === here)) void navigate("/TopTen");
   };
 
   return (

@@ -18,6 +18,8 @@ interface PageContainerProps {
   shareRef?: RefObject<HTMLElement | null>;
   // A compact card to share instead of the page. Rendered off screen at 360x640.
   shareCard?: ReactNode;
+  // False on pages with nothing to share.
+  shareable?: boolean;
 }
 
 const PageContainer = ({
@@ -27,6 +29,7 @@ const PageContainer = ({
   previousPage: prevProp,
   shareRef,
   shareCard,
+  shareable = true,
 }: PageContainerProps) => {
   const navigate = useNavigate();
   const pageRef = useRef<HTMLDivElement>(null);
@@ -88,7 +91,7 @@ const PageContainer = ({
                 Previous
               </Button>
             )}
-            <ShareButton capture={capture} />
+            {shareable && <ShareButton capture={capture} />}
             {nextPage && (
               <Button
                 size={"4"}

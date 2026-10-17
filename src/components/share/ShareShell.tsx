@@ -1,4 +1,5 @@
 import { getWatermark } from "@/lib/watermark";
+import { getCurrentTimeframe } from "@/lib/timeframe";
 import { ReactNode, useEffect, useState } from "react";
 import { getImageUrlById, SimpleItemDto } from "@/lib/queries";
 
@@ -53,7 +54,10 @@ export function ShareShell({
       >
         {children}
       </div>
-      {mark && <div style={{ fontSize: 11, opacity: 0.75, marginTop: 12 }}>{mark}</div>}
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: 11, opacity: 0.75, marginTop: 12 }}>
+        <span>{getCurrentTimeframe().description}</span>
+        {mark && <span>{mark}</span>}
+      </div>
     </div>
   );
 }

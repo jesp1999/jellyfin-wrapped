@@ -23,6 +23,7 @@ export default function EmptyState({
       backgroundColor={backgroundColor}
       nextPage={nextPage}
       previousPage={previousPage}
+      shareable={false}
     >
       <Container size="4" p="4">
         <Grid gap="4" style={{ textAlign: "center", paddingTop: "20vh" }}>

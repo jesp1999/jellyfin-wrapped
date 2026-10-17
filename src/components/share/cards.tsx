@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { addDays, differenceInCalendarDays, format, parseISO, startOfWeek, subDays, subWeeks } from "date-fns";
+import { addDays, differenceInCalendarDays, format, parseISO, startOfWeek, subWeeks } from "date-fns";
 import { useFirstWatched } from "@/hooks/queries/useFirstWatched";
 import { useMovies } from "@/hooks/queries/useMovies";
 import { useShows } from "@/hooks/queries/useShows";
@@ -13,7 +13,8 @@ import { useViewingPatterns } from "@/hooks/queries/useViewingPatterns";
 import { useDeviceStats } from "@/hooks/queries/useDeviceStats";
 import { useCalendar } from "@/hooks/queries/useCalendar";
 import { getTopRatedContent } from "@/lib/rating-helpers";
-import { getHolidayDates } from "@/lib/holiday-helpers";
+import { getHolidayDatesIn } from "@/lib/holiday-helpers";
+import { getCurrentTimeframe } from "@/lib/timeframe";
 import { getCachedHiddenIds } from "@/lib/cache";
 import { formatDuration } from "@/lib/utils";
 import type { SimpleItemDto } from "@/lib/queries";
@@ -184,10 +185,8 @@ export function CriticalCard({ bg }: CardProps) {
 // ---------------------------------------------------------------- holidays
 export function HolidayCard({ bg }: CardProps) {
   // Same dates as the page, so these are cache hits.
-  const dates = useMemo(() => {
-    const holidays = getHolidayDates(new Date());
-    return { christmas: holidays.christmas, christmasEve: subDays(holidays.christmas, 1), halloween: holidays.halloween, valentines: holidays.valentines };
-  }, []);
+  const timeframe = getCurrentTimeframe();
+  const dates = useMemo(() => getHolidayDatesIn(timeframe.startDate, timeframe.endDate), [timeframe]);
   const hidden = getCachedHiddenIds();
   const keep = (items?: { id?: string }[]) => (items ?? []).filter((i) => !hidden.includes(i.id ?? "")) as SimpleItemDto[];
   const sections = [

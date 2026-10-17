@@ -10,8 +10,8 @@ import { LoadingSpinner } from "../LoadingSpinner";
 import { MovieCard } from "./MoviesReviewPage/MovieCard";
 import { generateGuid } from "@/lib/utils";
 import { getCachedHiddenIds, setCachedHiddenId } from "@/lib/cache";
-import { getHolidayDates } from "@/lib/holiday-helpers";
-import { subDays } from "date-fns";
+import { getHolidayDatesIn } from "@/lib/holiday-helpers";
+import { getCurrentTimeframe } from "@/lib/timeframe";
 import PageContainer from "../PageContainer";
 
 const NEXT_PAGE = "/minutes-per-day";
@@ -20,16 +20,8 @@ export default function HolidayReviewPage() {
   const { showBoundary } = useErrorBoundary();
   const [hiddenIds, setHiddenIds] = useState<string[]>(getCachedHiddenIds());
 
-  const dates = useMemo(() => {
-    const today = new Date();
-    const holidays = getHolidayDates(today);
-    return {
-      christmas: holidays.christmas,
-      christmasEve: subDays(holidays.christmas, 1),
-      halloween: holidays.halloween,
-      valentines: holidays.valentines,
-    };
-  }, []);
+  const timeframe = getCurrentTimeframe();
+  const dates = useMemo(() => getHolidayDatesIn(timeframe.startDate, timeframe.endDate), [timeframe]);
 
   const {
     data: christmas,
