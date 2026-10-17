@@ -2,6 +2,8 @@
 
 A web application that generates personalized year-in-review statistics for your Jellyfin media server, inspired by Spotify Wrapped.
 
+This is an independently maintained fork of [johnpc/jellyfin-wrapped](https://github.com/johnpc/jellyfin-wrapped) (based on v1.0.15). It does not track upstream.
+
 ## ⚠️ Security Warning
 
 **DO NOT host this application publicly on the internet when using API keys as environment variables.** The API key is embedded in the frontend JavaScript bundle and will be visible to anyone who visits your site. This could expose your Jellyfin server to unauthorized access.
@@ -11,7 +13,7 @@ A web application that generates personalized year-in-review statistics for your
 - Host locally on your home network only
 - Use behind a VPN or authentication proxy
 - Deploy on a private network/intranet
-- Consider implementing server-side API key handling for public deployments
+- Use [server mode](#server-mode-no-admin-key-in-the-browser), which keeps the API key on a backend and out of the browser
 
 ## Features
 
@@ -19,6 +21,10 @@ A web application that generates personalized year-in-review statistics for your
 - 🎵 See your most played music
 - ⏱️ Track your total watching/listening time
 - 📈 Get insights into your viewing habits
+- 🗓️ Choose a timeframe: last 12, 6 or 3 months, last or current month, a calendar year, or all time
+- 🖼️ Share any page as a 9:16 image
+- 🌓 High contrast option for pages and share images
+- ♿ Keyboard and screen reader support
 - 🔒 Secure connection to your Jellyfin server
 - 📱 Responsive design for mobile and desktop
 
@@ -26,7 +32,7 @@ A web application that generates personalized year-in-review statistics for your
 
 ### Prerequisites
 
-- A Jellyfin server (version 10.8.0 or higher) with Jellyfin's official [Playback Reporting plugin](https://github.com/jellyfin/jellyfin-plugin-playbackreporting) installed
+- A Jellyfin server (tested on 12.1.0; this fork adds no new minimum version over 10.8.0) with Jellyfin's official [Playback Reporting plugin](https://github.com/jellyfin/jellyfin-plugin-playbackreporting) installed
 - Admin access to your Jellyfin server to generate an API key
 - Your Jellyfin server URL
 - A valid Jellyfin username and password for user authentication
@@ -44,6 +50,10 @@ The application requires the following environment variables to be set:
 
 - `JELLYFIN_SERVER_URL`: The URL of your Jellyfin server (e.g., `http://192.168.1.100:8096`)
 - `JELLYFIN_API_KEY`: An admin API key for accessing playback reporting data
+
+**Optional (production):**
+
+- `SHARE_WATERMARK`: footer text on share images. Unset shows the site's own address; `none` hides it.
 
 You can set these in a `.env` file in the project root for development:
 
@@ -71,14 +81,15 @@ VITE_JELLYFIN_API_KEY=your-admin-api-key-here
 1. Set up the required environment variables (see Environment Variables section above)
 2. Run the application locally or deploy it to your preferred hosting platform
 3. If server URL is not configured via environment variables, enter your Jellyfin server URL
-4. Log in with your Jellyfin credentials
-5. View your personalized media statistics!
+4. Log in with your Jellyfin credentials. "Remember me" is off by default; see [Privacy](#privacy)
+5. Pick a timeframe and, if you want, turn on High contrast on the first page
+6. View your personalized media statistics, and use Share on any page to save it as an image
 
 ## Development
 
 This project is built with:
 
-- React 18
+- React 19
 - TypeScript
 - Vite
 - Radix UI
@@ -88,14 +99,16 @@ This project is built with:
 ### Local Development
 
 ```bash
-# Clone the repository
-git clone https://github.com/johnpc/jellyfin-wrapped.git
+# Clone this repository, then enter it
 
 # Install dependencies
 npm install
 
 # Start development server
 npm run dev
+
+# Lint
+npm run lint
 ```
 
 ## Building for Production
@@ -167,13 +180,19 @@ brings back the original behavior. The backend's design, security model and ever
 The Playback Reporting plugin keeps about three months of history by default.
 Raise its retention if you want previous years.
 
-### Updating Published Docker Image
+## Not covered
 
-```bash
-docker build -t jellyfin-wrapped . --no-cache
-docker tag jellyfin-wrapped:latest mrorbitman/jellyfin-wrapped:latest
-docker push mrorbitman/jellyfin-wrapped:latest
-```
+Books and audiobooks are not included. The Playback Reporting plugin does not record
+book or audiobook activity, and Jellyfin keeps only a played flag and a position for them,
+with no time or date of reading.
+
+## Accessibility
+
+Pages are built for keyboard and screen reader use (skip link, focus moved to the page on
+navigation, titles and announcements per page, text alternatives for charts, 44px touch
+targets, reduced motion respected). The pages pass axe-core with no violations in normal
+and high contrast modes. High contrast darkens the page colors and makes share images solid
+and full opacity, for 7:1 or better text contrast.
 
 ## Contributing
 
@@ -182,6 +201,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Privacy
 
 This application connects directly to your Jellyfin server and does not store any credentials or personal data on external servers. All data is processed locally in your browser.
+
+Your password is never stored. The server URL, username and Jellyfin session token are kept in the browser's session storage and are gone when the tab closes. If you check "Remember me" (off by default) they are kept in local storage on that device until you uncheck it. The High contrast choice is kept in local storage.
 
 ## Demo Screenshots
 
