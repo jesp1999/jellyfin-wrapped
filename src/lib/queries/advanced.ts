@@ -120,8 +120,7 @@ export const getMonthlyShowStats = async (): Promise<
     {}
   );
 
-  const monthlyStats = await Promise.all(
-    Object.entries(monthlyShowData).map(([month, data]) => {
+  const monthlyStats = Object.entries(monthlyShowData).map(([month, data]) => {
       let maxDuration = 0;
       let topShowId = "";
 
@@ -148,8 +147,7 @@ export const getMonthlyShowStats = async (): Promise<
         },
         totalWatchTimeMinutes: data.totalDuration / 60,
       };
-    })
-  );
+    });
 
   return monthlyStats.sort((a, b) => b.month.getTime() - a.month.getTime());
 };

@@ -17,8 +17,8 @@ export function useInView<T extends Element>(margin = "300px") {
     if (!el || seen) return;
     const r = el.getBoundingClientRect();
     if (!("IntersectionObserver" in window) || (r.width === 0 && r.height === 0)) {
-      setSeen(true);
-      return;
+      const t = setTimeout(() => setSeen(true), 0);
+      return () => clearTimeout(t);
     }
     const io = new IntersectionObserver(
       (e) => {

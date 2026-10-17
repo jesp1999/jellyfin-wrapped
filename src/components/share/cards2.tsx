@@ -15,7 +15,7 @@ const visible = (items: SimpleItemDto[]) => {
 
 export function MoviesCard({ bg }: CardProps) {
   const { data } = useMovies();
-  const movies = visible((data ?? []) as SimpleItemDto[]);
+  const movies = visible((data ?? []));
   if (!movies.length) return null;
   return (
     <ShareShell bg={bg} center title={`You Watched ${plural(movies.length, "Movie", "Movies")}`} subtitle="Your complete movie viewing history">
@@ -64,7 +64,7 @@ export function GenreCard({ bg }: CardProps) {
   const { data: movies } = useMovies();
   const { data: shows } = useShows();
   const top = getTopGenre(
-    visible((movies ?? []) as SimpleItemDto[]),
+    visible((movies ?? [])),
     visible(((shows ?? []) as { item: SimpleItemDto }[]).map((s) => s.item))
   );
   if (!top) return null;

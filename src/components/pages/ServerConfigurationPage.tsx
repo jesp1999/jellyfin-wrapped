@@ -68,8 +68,6 @@ const ServerConfigurationPage = () => {
   };
 
   const handleConnect = async (e: React.FormEvent<HTMLFormElement>) => {
-    /* eslint-disable @typescript-eslint/no-unsafe-call */
-    /* eslint-disable @typescript-eslint/no-unsafe-member-access */
     e.preventDefault();
     setIsLoading(true);
     setError("");

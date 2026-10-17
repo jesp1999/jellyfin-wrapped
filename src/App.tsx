@@ -31,7 +31,7 @@ import UnfinishedShowsPage from "./components/pages/UnfinishedShowsPage";
 import CriticallyAcclaimedPage from "./components/pages/CriticallyAcclaimedPage";
 import TopTenPage from "./components/pages/TopTenPage";
 import FirstWatchedPage from "./components/pages/FirstWatchedPage";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import ActivityCalendarPage from "./components/pages/ActivityCalendarPage";
 import SummaryPage from "./components/pages/SummaryPage";
 import Navigation from "./components/Navigation";
@@ -71,14 +71,12 @@ const ROUTE_NAMES: Record<string, string> = {
 function RouteEffects() {
   const { pathname } = useLocation();
   const reduce = useReducedMotion();
-  const [announcement, setAnnouncement] = useState("");
+  const name = PAGES.find((p) => p.path === pathname)?.name ?? ROUTE_NAMES[pathname] ?? "Jellyfin Wrapped";
   const firstRoute = useRef(true);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
-    const name = PAGES.find((p) => p.path === pathname)?.name ?? ROUTE_NAMES[pathname] ?? "Jellyfin Wrapped";
     document.title = `${name} · Jellyfin Wrapped`;
-    setAnnouncement(name);
     const focusMain = () => {
       // Only when focus was lost with the old page; never take it from something the user is using.
       if (document.activeElement && document.activeElement !== document.body) return;
@@ -88,11 +86,11 @@ function RouteEffects() {
     const timers = firstRoute.current ? [] : [setTimeout(focusMain, 50), setTimeout(focusMain, 800)];
     firstRoute.current = false;
     return () => timers.forEach(clearTimeout);
-  }, [pathname, reduce]);
+  }, [pathname, reduce, name]);
 
   return (
     <div role="status" aria-live="polite" className="wrapped-sr-only">
-      {announcement}
+      {name}
     </div>
   );
 }

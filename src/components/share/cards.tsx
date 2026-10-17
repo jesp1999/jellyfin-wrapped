@@ -124,14 +124,14 @@ function ItemList({ bg, title, subtitle, items, square }: CardProps & { title: s
 
 export function AudioCard({ bg }: CardProps) {
   const { data } = useAudio();
-  const items = (data ?? []) as SimpleItemDto[];
+  const items = (data ?? []);
   if (!items.length) return null;
   return <ItemList bg={bg} title={`You Listened to ${plural(items.length, "Song", "Songs")}`} subtitle="Your music listening history" items={items} square />;
 }
 
 export function MusicVideosCard({ bg }: CardProps) {
   const { data } = useMusicVideos();
-  const items = (data ?? []) as SimpleItemDto[];
+  const items = (data ?? []);
   if (!items.length) return null;
   return <ItemList bg={bg} title={`You Watched ${plural(items.length, "Music Video", "Music Videos")}`} subtitle="Your music video collection" items={items} square={false} />;
 }

@@ -1,13 +1,16 @@
 import { memo } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
+// Random positions, picked once when the module loads (not during render).
+const STARS = Array.from({ length: 20 }, () => ({ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }));
+
 function BlinkingStars() {
   // Decorative and endless, so it is left out for people who ask for less motion.
   const reduce = useReducedMotion();
   if (reduce) return null;
   return (
     <AnimatePresence>
-      {[...Array<number>(20)].map((_, i) => (
+      {STARS.map((pos, i) => (
         <motion.div
           key={i}
           aria-hidden="true"
@@ -21,10 +24,7 @@ function BlinkingStars() {
             delay: i * 0.1,
           }}
           className="absolute w-2 h-2 bg-yellow-200 rounded-full"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-          }}
+          style={pos}
         />
       ))}
     </AnimatePresence>

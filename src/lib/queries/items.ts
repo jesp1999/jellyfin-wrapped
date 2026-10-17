@@ -66,7 +66,7 @@ export const getItemDtosByIds = async (
       const responses = await Promise.all(batchPromises);
       
       for (const response of responses) {
-        const batchItems: SimpleItemDto[] = (((response as { data: { Items?: BaseItemDto[] } }).data.Items ?? []) as BaseItemDto[]).map(
+        const batchItems: SimpleItemDto[] = (((response as { data: { Items?: BaseItemDto[] } }).data.Items ?? [])).map(
           (item: BaseItemDto) => {
             const ticks = item.RunTimeTicks ?? 0;
             const durationSeconds = Math.floor(ticks / 10000000);
@@ -91,7 +91,7 @@ export const getItemDtosByIds = async (
           }
         );
 
-        fetchedItems.push(...(batchItems as SimpleItemDto[]));
+        fetchedItems.push(...(batchItems));
       }
     }
 
