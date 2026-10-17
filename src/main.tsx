@@ -8,5 +8,5 @@ if (!rootElement) throw new Error("Failed to find the root element");
 createRoot(rootElement).render(<App />);
 
 if ("serviceWorker" in navigator && import.meta.env.PROD) {
-  window.addEventListener("load", () => void navigator.serviceWorker.register("/sw.js"));
+  window.addEventListener("load", () => void navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" }));
 }

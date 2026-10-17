@@ -10,7 +10,7 @@ export const getLibraryKinds = async (): Promise<MediaKind[] | null> => {
   try {
     const api = await getAuthenticatedJellyfinApi();
     const userId = await getCurrentUserId();
-    const headers = { Authorization: `MediaBrowser Client="Jellyfin Wrapped", Device="Web", DeviceId="jellyfin-wrapped", Version="1.0.0", Token="${api.accessToken}"` };
+    const headers = { Authorization: api.authorizationHeader };
     const get = async (path: string): Promise<Page | null> => { const r = await fetch(`${api.basePath}${path}`, { headers }); return r.ok ? ((await r.json()) as Page) : null; };
     const views = (await get(`/UserViews?userId=${userId}`)) ?? (await get(`/Users/${userId}/Views`)); // newer / older servers
     if (!views) return null;

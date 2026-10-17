@@ -15,6 +15,12 @@ let adminApi: Api | null = null;
 const sleep = (durationMs: number) =>
   new Promise((resolve) => setTimeout(resolve, durationMs));
 
+// One id per browser. A shared id makes Jellyfin treat every device as the same one, so a sign-in on a second device can invalidate the first one's token.
+const deviceId = (): string => {
+  const key = "jellyfinwrapped_device_id";
+  try { let id = localStorage.getItem(key); if (!id) { id = globalThis.crypto?.randomUUID?.() ?? `wrapped-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`; localStorage.setItem(key, id); } return id; } catch { return "Jellyfin-Wrapped"; }
+};
+
 // Get environment variables
 export const getEnvVar = (name: string): string | undefined => {
   // Check if we're in a browser environment with window.ENV (production/Docker)
@@ -95,7 +101,7 @@ export const authenticateByAuthToken = (
     },
     deviceInfo: {
       name: "Jellyfin-Wrapped",
-      id: "Jellyfin-Wrapped",
+      id: deviceId(),
     },
   });
   api = jellyfin.createApi(serverUrl, jellyfinApiKey);
@@ -117,7 +123,7 @@ export const authenticateByUserName = async (
     },
     deviceInfo: {
       name: "Jellyfin-Wrapped",
-      id: "Jellyfin-Wrapped",
+      id: deviceId(),
     },
   });
   console.log("Connecting to server...", { serverUrl, username });

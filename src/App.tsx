@@ -7,7 +7,8 @@ import {
   Outlet,
   useLocation,
 } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { removeCacheValue, JELLYFIN_AUTH_TOKEN_CACHE_KEY } from "./lib/cache";
 import SplashPage from "./components/pages/SplashPage";
 import ServerConfigurationPage from "./components/pages/ServerConfigurationPage";
 import MoviesReviewPage from "./components/pages/MoviesReviewPage";
@@ -33,6 +34,16 @@ import Navigation from "./components/Navigation";
 import { LoadingPage } from "./components/pages/LoadingPage";
 
 const queryClient = new QueryClient({
+  // A revoked or expired token: forget it and go back to the sign-in form.
+  queryCache: new QueryCache({
+    onError: (error) => {
+      const status = (error as { response?: { status?: number } }).response?.status;
+      if (status === 401 || /\(401\)/.test(error.message)) {
+        removeCacheValue(JELLYFIN_AUTH_TOKEN_CACHE_KEY);
+        window.location.assign("/configure");
+      }
+    },
+  }),
   defaultOptions: {
     queries: {
       staleTime: Infinity,
