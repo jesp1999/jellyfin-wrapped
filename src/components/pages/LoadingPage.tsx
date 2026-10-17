@@ -13,6 +13,8 @@ import { useMonthlyShowStats } from "../../hooks/queries/useMonthlyShowStats";
 import { useMinutesPlayedPerDay } from "../../hooks/queries/useMinutesPlayedPerDay";
 import { useDeviceStats } from "../../hooks/queries/useDeviceStats";
 import { useCalendar } from "../../hooks/queries/useCalendar";
+import { useTopTen } from "../../hooks/queries/useTopTen";
+import { useFirstWatched } from "../../hooks/queries/useFirstWatched";
 import { useLibraryKinds } from "../../hooks/queries/useLibraryKinds";
 import type { MediaKind } from "@/lib/queries/libraries";
 import { Container } from "@radix-ui/themes";
@@ -44,6 +46,8 @@ export function LoadingPage() {
     { message: "Adding up your watch time...", query: useMinutesPlayedPerDay() },
     { message: "Checking your devices...", query: useDeviceStats() },
     { message: "Filling in the calendar...", query: useCalendar() },
+    { message: "Picking your top picks...", query: useTopTen() },
+    { message: "Finding your first watch...", query: useFirstWatched() },
   ];
   const kinds = libraries.data;
   const steps = allSteps.filter((s) => !s.kinds || !kinds || s.kinds.some((k) => kinds.includes(k)));
