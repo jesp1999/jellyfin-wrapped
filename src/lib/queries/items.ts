@@ -5,6 +5,15 @@ import { getCurrentUserId } from "./utils";
 import { SimpleItemDto } from "./types";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 
+// Tracks rarely have art of their own. Use the track, else its album, else the artist,
+// going by the image tags Jellyfin reports so we never request an image that is not there.
+const pickImageId = (item: BaseItemDto): string | undefined => {
+  if (item.Type !== "Audio") return item.Id;
+  if (item.ImageTags?.Primary) return item.Id;
+  if (item.AlbumId && item.AlbumPrimaryImageTag) return item.AlbumId;
+  return item.AlbumArtists?.[0]?.Id ?? item.ArtistItems?.[0]?.Id ?? item.AlbumId ?? item.Id;
+};
+
 export const getItemDtosByIds = async (
   ids: string[]
 ): Promise<SimpleItemDto[]> => {
@@ -20,7 +29,7 @@ export const getItemDtosByIds = async (
   const uncachedIds: string[] = [];
 
   filteredIds.forEach((itemId) => {
-    const cachedItem = getCacheValue(`item2_${itemId}`);
+    const cachedItem = getCacheValue(`item3_${itemId}`);
     if (cachedItem) {
       cachedItems.push(JSON.parse(cachedItem) as SimpleItemDto);
     } else {
@@ -73,10 +82,10 @@ export const getItemDtosByIds = async (
               genres: item.Genres,
               genreItems: item.GenreItems,
               durationSeconds,
-              imageId: item.Type === "Audio" ? item.AlbumId ?? item.Id : item.Id,
+              imageId: pickImageId(item),
             };
 
-            setCacheValue(`item2_${item.Id}`, JSON.stringify(simpleItem));
+            setCacheValue(`item3_${item.Id}`, JSON.stringify(simpleItem));
             return simpleItem;
           }
         );
@@ -107,9 +116,9 @@ export const getItemDtosByIds = async (
           genres: item.data.Genres,
           genreItems: item.data.GenreItems,
           durationSeconds,
-          imageId: item.data.Type === "Audio" ? item.data.AlbumId ?? item.data.Id : item.data.Id,
+          imageId: pickImageId(item.data),
         };
-        setCacheValue(`item2_${itemId}`, JSON.stringify(simpleItem));
+        setCacheValue(`item3_${itemId}`, JSON.stringify(simpleItem));
         return simpleItem;
       } catch {
         console.debug(`Item ${itemId} not found, skipping`);
