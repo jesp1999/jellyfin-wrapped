@@ -89,6 +89,9 @@ export const generateTimeframeOptions = (): TimeframeOption[] => {
     });
   }
 
+  // All time: the start is a fixed early date; the real first play is looked up separately.
+  options.push({ id: "all-time", name: "All Time", startDate: new Date(2000, 0, 1), endDate: now, description: "Everything on record" });
+
   return options;
 };
 

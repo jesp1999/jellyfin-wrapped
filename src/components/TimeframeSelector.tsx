@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { styled } from "@stitches/react";
 import { motion } from "framer-motion";
+import { differenceInDays, format } from "date-fns";
+import { useEarliestPlay } from "@/hooks/queries/useEarliestPlay";
 import {
   generateTimeframeOptions,
   TimeframeOption,
@@ -21,6 +23,9 @@ const TimeframeSelector: React.FC<TimeframeSelectorProps> = ({
     getCurrentTimeframe(),
   );
   const [isOpen, setIsOpen] = useState(false);
+  const { data: earliest } = useEarliestPlay();
+  const describe = (t: TimeframeOption) =>
+    t.id === "all-time" && earliest ? `Since ${format(earliest, "MMM yyyy")}` : formatTimeframeDescription(t);
 
   const handleTimeframeSelect = (timeframe: TimeframeOption) => {
     setSelectedTimeframe(timeframe);
@@ -52,10 +57,13 @@ const TimeframeSelector: React.FC<TimeframeSelectorProps> = ({
       <CurrentSelection onClick={() => setIsOpen(!isOpen)}>
         <span>{selectedTimeframe.name}</span>
         <TimeframeDescription>
-          {formatTimeframeDescription(selectedTimeframe)}
+          {describe(selectedTimeframe)}
         </TimeframeDescription>
         <DropdownIcon isOpen={isOpen}>▼</DropdownIcon>
       </CurrentSelection>
+      {earliest && selectedTimeframe.id !== "all-time" && differenceInDays(earliest, selectedTimeframe.startDate) > 14 && (
+        <Hint>History starts {format(earliest, "MMM d, yyyy")}. If that looks too recent, ask the server owner to check the Playback Reporting retention.</Hint>
+      )}
 
       {isOpen && (
         <DropdownMenu
@@ -73,7 +81,7 @@ const TimeframeSelector: React.FC<TimeframeSelectorProps> = ({
             >
               <span>{timeframe.name}</span>
               <TimeframeDescription>
-                {formatTimeframeDescription(timeframe)}
+                {describe(timeframe)}
               </TimeframeDescription>
             </DropdownItem>
           ))}
@@ -116,6 +124,14 @@ const TimeframeDescription = styled("small", {
   color: "rgba(255, 255, 255, 0.7)",
   fontSize: "0.8rem",
   marginTop: "2px",
+});
+
+const Hint = styled("small", {
+  display: "block",
+  color: "rgba(255, 255, 255, 0.8)",
+  fontSize: "0.75rem",
+  marginTop: "6px",
+  lineHeight: 1.3,
 });
 
 const DropdownIcon = styled("div", {

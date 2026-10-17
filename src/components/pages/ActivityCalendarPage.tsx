@@ -2,7 +2,7 @@ import { ResponsiveCalendar } from "@nivo/calendar";
 import { Card } from "@/components/ui/card";
 import { Container } from "@radix-ui/themes";
 import { useErrorBoundary } from "react-error-boundary";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { getCurrentTimeframe } from "@/lib/timeframe";
 import { Title } from "../ui/styled";
 import { motion } from "framer-motion";
@@ -26,7 +26,10 @@ export default function ActivityCalendarPage() {
     return <LoadingSpinner backgroundColor="var(--gray-8)" />;
   }
 
-  const fromDate = format(getCurrentTimeframe().startDate, "yyyy-MM-dd");
+  const tf = getCurrentTimeframe();
+  const first = data?.[0]?.day; // rows come back oldest first
+  const start = tf.id === "all-time" ? (first ? parseISO(first) : tf.endDate) : tf.startDate;
+  const fromDate = format(start, "yyyy-MM-dd");
   const toDate = format(getCurrentTimeframe().endDate, "yyyy-MM-dd");
 
   return (
@@ -39,7 +42,7 @@ export default function ActivityCalendarPage() {
           <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginBottom: "1rem" }}>
             A calendar view of your daily viewing patterns
           </p>
-          <div style={{ height: isMobile ? "300px" : "500px" }}>
+          <div style={{ height: (isMobile ? 150 : 250) * (Number(toDate.slice(0, 4)) - Number(fromDate.slice(0, 4)) + 1) }}>
             <ResponsiveCalendar
               data={data ?? []}
               from={fromDate}

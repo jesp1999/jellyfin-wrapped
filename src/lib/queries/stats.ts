@@ -115,3 +115,10 @@ export const getCalendarData = async (): Promise<
     value: parseInt(row[countIndex]),
   }));
 };
+
+export const getEarliestPlayDate = async (): Promise<Date | null> => {
+  const userId = await getCurrentUserId();
+  const data = await playbackReportingSqlRequest(`SELECT MIN(DateCreated) AS Earliest FROM PlaybackActivity WHERE UserId = '${userId}'`);
+  const date = new Date(String(data.results[0]?.[0] ?? "").replace(" ", "T").replace(/(\.\d{3})\d+$/, "$1"));
+  return isNaN(date.getTime()) ? null : date;
+};
