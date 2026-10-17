@@ -61,7 +61,16 @@ function ScrollToTop() {
 
 function RootLayout() {
   return (
-    <ErrorBoundary fallback={<div>Something went wrong</div>}>
+    <ErrorBoundary
+      onError={(e) => console.error(e)}
+      fallbackRender={() => (
+        <div style={{ minHeight: "100vh", display: "grid", placeContent: "center", gap: "1rem", textAlign: "center", background: "#2D00F7", color: "white", padding: "1rem" }}>
+          <h1>Something went wrong</h1>
+          <p>Your stats could not be loaded. Check your connection and try again.</p>
+          <button onClick={() => window.location.assign("/")}>Start over</button>
+        </div>
+      )}
+    >
       <ScrollToTop />
       <QueryClientProvider client={queryClient}>
         <Theme>

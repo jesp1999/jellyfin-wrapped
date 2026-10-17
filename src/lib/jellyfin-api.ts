@@ -107,7 +107,7 @@ export const authenticateByUserName = async (
   username: string,
   password: string
 ): Promise<Api> => {
-  if (api) {
+  if (api?.accessToken) {
     return api;
   }
   const jellyfin = new Jellyfin({
@@ -121,22 +121,17 @@ export const authenticateByUserName = async (
     },
   });
   console.log("Connecting to server...", { serverUrl, username });
-  api = jellyfin.createApi(serverUrl);
-
+  const client = jellyfin.createApi(serverUrl);
   try {
-    // Authentication state is persisted on the api object
-    await api.authenticateUserByName(username, password);
-    // Keep the session token, not the password, so later page loads do not need
-    // the password and it is never left in localStorage.
-    if (api.accessToken) {
-      setCacheValue(JELLYFIN_AUTH_TOKEN_CACHE_KEY, api.accessToken);
-    }
-    removeCacheValue(JELLYFIN_PASSWORD_CACHE_KEY);
+    await client.authenticateUserByName(username, password);
   } catch (error) {
     console.error("Connection failed:", error);
-    alert(error);
-    throw error;
+    const s = (error as { response?: { status?: number } }).response?.status;
+    throw new Error(s === 401 ? "Incorrect username or password." : s ? "The server rejected the sign-in." : "Could not reach the server. Check the URL.");
   }
-
-  return api;
+  // Keep the session token, not the password.
+  if (client.accessToken) setCacheValue(JELLYFIN_AUTH_TOKEN_CACHE_KEY, client.accessToken);
+  removeCacheValue(JELLYFIN_PASSWORD_CACHE_KEY);
+  api = client;
+  return client;
 };

@@ -16,14 +16,12 @@ import {
   JELLYFIN_USERNAME_CACHE_KEY,
   setCacheValue,
 } from "@/lib/cache";
-import { useErrorBoundary } from "react-error-boundary";
 
 import { getEnvVar } from "@/lib/jellyfin-api";
 
 const NEXT_PAGE = "/loading";
 
 const ServerConfigurationPage = () => {
-  const { showBoundary } = useErrorBoundary();
   const navigate = useNavigate();
   const serverUrlOverride = getEnvVar("JELLYFIN_SERVER_URL");
 
@@ -41,6 +39,7 @@ const ServerConfigurationPage = () => {
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [useAuthToken, setUseAuthToken] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
   const handleServerUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -70,6 +69,7 @@ const ServerConfigurationPage = () => {
     /* eslint-disable @typescript-eslint/no-unsafe-member-access */
     e.preventDefault();
     setIsLoading(true);
+    setError("");
     try {
       // Ensure server URL is saved to cache if it comes from environment
       const finalServerUrl = serverUrlOverride || serverUrl;
@@ -85,7 +85,7 @@ const ServerConfigurationPage = () => {
 
       void navigate(NEXT_PAGE);
     } catch (e) {
-      showBoundary(e as Error);
+      setError(e instanceof Error ? e.message : "Could not sign in.");
     } finally {
       setIsLoading(false);
     }
@@ -264,6 +264,7 @@ const ServerConfigurationPage = () => {
                 )}
               </Flex>
 
+              {error && <Text role="alert" size="2" color="red">{error}</Text>}
               <StyledButton size="3" disabled={isLoading}>
                 {isLoading ? "Connecting..." : "Connect to Server"}
               </StyledButton>
