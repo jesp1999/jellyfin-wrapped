@@ -57,7 +57,7 @@ export default function ShowReviewPage() {
               You Watched {visibleShows.length} Shows
             </Title>
             <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginTop: "0.5rem" }}>
-              All the TV series you enjoyed this year
+              All the TV series you enjoyed in this period
             </p>
           </div>
 

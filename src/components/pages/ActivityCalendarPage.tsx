@@ -2,7 +2,8 @@ import { ResponsiveCalendar } from "@nivo/calendar";
 import { Card } from "@/components/ui/card";
 import { Container } from "@radix-ui/themes";
 import { useErrorBoundary } from "react-error-boundary";
-import { subYears, format } from "date-fns";
+import { format } from "date-fns";
+import { getCurrentTimeframe } from "@/lib/timeframe";
 import { Title } from "../ui/styled";
 import { motion } from "framer-motion";
 import { useCalendar } from "@/hooks/queries/useCalendar";
@@ -25,8 +26,8 @@ export default function ActivityCalendarPage() {
     return <LoadingSpinner backgroundColor="var(--gray-8)" />;
   }
 
-  const fromDate = format(subYears(new Date(), 1), "yyyy-MM-dd");
-  const toDate = format(new Date(), "yyyy-MM-dd");
+  const fromDate = format(getCurrentTimeframe().startDate, "yyyy-MM-dd");
+  const toDate = format(getCurrentTimeframe().endDate, "yyyy-MM-dd");
 
   return (
     <PageContainer backgroundColor="var(--indigo-8)" nextPage={NEXT_PAGE} previousPage="/device-stats">

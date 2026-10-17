@@ -78,7 +78,7 @@ export default function ShowOfTheMonthPage() {
               Your Top Show Each Month
             </Title>
             <Text size="4" color="gray" style={{ marginTop: "8px" }}>
-              The show you watched the most in each month of the year
+              The show you watched the most in each month
             </Text>
           </div>
 

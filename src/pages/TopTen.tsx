@@ -8,9 +8,10 @@ import PageContainer from "@/components/PageContainer";
 import { Container, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { Title } from "@/components/ui/styled";
+import { getCurrentTimeframe } from "@/lib/timeframe";
 
 export const TopTen = () => {
-  const year = new Date().getFullYear();
+  const timeframe = getCurrentTimeframe();
   const { data, isLoading, error } = useTopTen();
 
   if (isLoading) return <LoadingSpinner />;
@@ -22,7 +23,8 @@ export const TopTen = () => {
       <Container size="4" p="4">
         <Grid gap="6">
           <div style={{ textAlign: "center" }}>
-            <Title as={motion.h1}>Your Top 10 of {year}</Title>
+            <Title as={motion.h1}>Your Top 10</Title>
+            <p style={{ fontSize: "1.125rem", color: "white", marginTop: "0.5rem" }}>{timeframe.description}</p>
           </div>
 
           <Grid columns={{ initial: "1", md: "2" }} gap="6">

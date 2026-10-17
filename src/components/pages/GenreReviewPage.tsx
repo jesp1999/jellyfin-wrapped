@@ -70,7 +70,7 @@ export default function GenreReviewPage() {
               Your Top Genre: {topGenreData.genre}
             </Title>
             <p style={{ fontSize: "1.125rem", color: "var(--gray-11)", marginTop: "0.5rem" }}>
-              The genre you watched most this year
+              The genre you watched most in this period
             </p>
             <p style={{ fontSize: "1.5rem", color: "white", marginTop: "0.5rem" }}>
               {topGenreData.count} items watched

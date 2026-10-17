@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { addDays, format } from "date-fns";
 import { getCurrentTimeframe } from "../timeframe";
 import {
   getAdminJellyfinApi,
@@ -17,6 +17,9 @@ export const getEndDate = (): Date => {
 export const formatDateForSql = (date: Date): string => {
   return format(date, "yyyy-MM-dd");
 };
+
+export const formatEndDateForSql = (d: Date): string =>
+  format(addDays(d, 1), "yyyy-MM-dd");
 
 export const getCurrentUserId = async (): Promise<string> => {
   const { getUserApi } = await import("@jellyfin/sdk/lib/utils/api");
