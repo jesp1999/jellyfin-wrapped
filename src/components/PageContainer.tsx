@@ -26,6 +26,8 @@ const PageContainer = ({
   const at = all.indexOf(pathname);
   const nextPage = at < 0 ? nextProp : (all.slice(at + 1).find((p) => shown.includes(p)) ?? "/");
   const previousPage = at < 0 ? prevProp : (all.slice(0, at).reverse().find((p) => shown.includes(p)) ?? "/loading");
+  // Last visible page: Next has nowhere to go, so it becomes Done and returns to the start.
+  const done = at >= 0 && nextPage === "/";
 
   return (
     <Box style={{ backgroundColor, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -51,12 +53,13 @@ const PageContainer = ({
             {nextPage && (
               <Button
                 size={"4"}
+                color={done ? "green" : undefined}
                 style={{ flex: 1 }}
                 onClick={() => {
                   void navigate(nextPage);
                 }}
               >
-                Next
+                {done ? "Done" : "Next"}
               </Button>
             )}
           </Flex>
