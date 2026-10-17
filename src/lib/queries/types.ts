@@ -14,6 +14,8 @@ export type SimpleItemDto = {
   genres?: string[] | null;
   genreItems?: NameGuidPair[] | null;
   durationSeconds?: number;
+  // Item whose Primary image to show. Tracks have none; their album does.
+  imageId?: string | null;
 };
 
 export interface PunchCardData {

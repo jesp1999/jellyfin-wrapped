@@ -11,7 +11,7 @@ export function ContentImage({ item }: { item: SimpleItemDto }) {
     if (!seen) return;
     const fetchImageUrl = async () => {
       try {
-        const url = await getImageUrlById(item.id ?? "");
+        const url = await getImageUrlById(item.imageId ?? item.id ?? "");
         setImageUrl(url);
       } catch (error) {
         console.error("Failed to fetch image URL:", error);

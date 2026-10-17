@@ -20,7 +20,7 @@ export const getItemDtosByIds = async (
   const uncachedIds: string[] = [];
 
   filteredIds.forEach((itemId) => {
-    const cachedItem = getCacheValue(`item_${itemId}`);
+    const cachedItem = getCacheValue(`item2_${itemId}`);
     if (cachedItem) {
       cachedItems.push(JSON.parse(cachedItem) as SimpleItemDto);
     } else {
@@ -73,9 +73,10 @@ export const getItemDtosByIds = async (
               genres: item.Genres,
               genreItems: item.GenreItems,
               durationSeconds,
+              imageId: item.Type === "Audio" ? item.AlbumId ?? item.Id : item.Id,
             };
 
-            setCacheValue(`item_${item.Id}`, JSON.stringify(simpleItem));
+            setCacheValue(`item2_${item.Id}`, JSON.stringify(simpleItem));
             return simpleItem;
           }
         );
@@ -106,8 +107,9 @@ export const getItemDtosByIds = async (
           genres: item.data.Genres,
           genreItems: item.data.GenreItems,
           durationSeconds,
+          imageId: item.data.Type === "Audio" ? item.data.AlbumId ?? item.data.Id : item.data.Id,
         };
-        setCacheValue(`item_${itemId}`, JSON.stringify(simpleItem));
+        setCacheValue(`item2_${itemId}`, JSON.stringify(simpleItem));
         return simpleItem;
       } catch {
         console.debug(`Item ${itemId} not found, skipping`);
