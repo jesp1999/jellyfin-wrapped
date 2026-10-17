@@ -25,7 +25,7 @@ export function LoadingPage() {
   useEffect(() => {
     if (!allLoaded) return;
     const timer = setTimeout(() => {
-      void navigate("/TopTen");
+      void navigate("/top-ten");
     }, FINISH_DELAY_MS);
     return () => clearTimeout(timer);
   }, [allLoaded, navigate]);

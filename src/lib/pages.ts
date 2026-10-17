@@ -5,7 +5,7 @@ import { getCurrentTimeframe, type TimeframeOption } from "@/lib/timeframe";
 // Page order for Next/Previous and the side menu. A page shows when the user can see at least one of its kinds; none listed = always.
 const P = (path: string, name: string, ...requires: MediaKind[]) => ({ path, name, requires });
 export const PAGES = [
-  P("/TopTen", "Top 10", "movies", "shows"), P("/first-watched", "First Watched", "movies", "shows"),
+  P("/top-ten", "Top 10", "movies", "shows"), P("/first-watched", "First Watched", "movies", "shows"),
   P("/movies", "Movies", "movies"), P("/shows", "TV Shows", "shows"),
   P("/audio", "Music", "music"), P("/music-videos", "Music Videos", "musicVideos"),
   P("/actors", "Favorite Actors", "movies"), P("/genres", "Genres", "movies"),

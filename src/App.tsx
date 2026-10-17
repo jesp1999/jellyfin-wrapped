@@ -8,6 +8,7 @@ import {
   RouterProvider,
   Outlet,
   useLocation,
+  Navigate,
 } from "react-router-dom";
 import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { removeCacheValue, JELLYFIN_AUTH_TOKEN_CACHE_KEY } from "./lib/cache";
@@ -220,8 +221,13 @@ const router = createBrowserRouter([
         element: <SummaryPage />,
       },
       {
-        path: "/TopTen",
+        path: "/top-ten",
         element: <TopTenPage />,
+      },
+      // The old, mixed-case address.
+      {
+        path: "/TopTen",
+        element: <Navigate to="/top-ten" replace />,
       },
     ],
   },

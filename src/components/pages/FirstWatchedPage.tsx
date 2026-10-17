@@ -11,7 +11,7 @@ import { itemVariants } from "@/lib/styled-variants";
 import PageContainer from "../PageContainer";
 
 const NEXT_PAGE = "/movies";
-const PREVIOUS_PAGE = "/TopTen";
+const PREVIOUS_PAGE = "/top-ten";
 
 export default function FirstWatchedPage() {
   const { showBoundary } = useErrorBoundary();

@@ -50,7 +50,7 @@ const Navigation = () => {
     setWarmups((n) => n + 1);
     // The page open now may not fit the new timeframe.
     const here = location.pathname;
-    if (PAGES.some((p) => p.path === here) && !visiblePages(kinds).some((p) => p.path === here)) void navigate("/TopTen");
+    if (PAGES.some((p) => p.path === here) && !visiblePages(kinds).some((p) => p.path === here)) void navigate("/top-ten");
   };
 
   return (
