@@ -5,6 +5,44 @@ body {
   margin: 0;
 }
 
+/* Behind everything, so overscroll never shows white. Pages paint the root their own colour while shown. */
+html {
+  background-color: #4d2dff;
+}
+html[data-contrast="high"] {
+  background-color: #14006b;
+}
+
+/* High-contrast share cards: no dimmed text, no shadows. */
+[data-share-contrast="high"] * {
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+/* The "High contrast" checkbox: a 24px box with a white border (3:1 on the purple) and a dark tick. */
+.wrapped-check {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  border: 2px solid #fff;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+/* Same box on a light surface. */
+.wrapped-check--light {
+  border-color: #333;
+}
+.wrapped-check.wrapped-check--light:checked {
+  background: #333 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px no-repeat;
+}
+.wrapped-check:checked {
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7' fill='none' stroke='%2314006b' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px no-repeat;
+}
+
 /* Text for screen readers only. */
 .wrapped-sr-only {
   position: absolute;

@@ -12,6 +12,8 @@ import { ChartAlt } from "../charts/ChartAlt";
 import { LineChart } from "../charts/LineChart";
 import { BarChart } from "../charts/BarChart";
 import PageContainer from "../PageContainer";
+import { addDays, format, parseISO } from "date-fns";
+import { dayLabelFormat, daysInTimeframe } from "@/lib/days";
 
 const NEXT_PAGE = "/show-of-the-month";
 const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -60,10 +62,11 @@ export default function MinutesPlayedPerDayPage() {
   const chartWidth = Math.min(containerWidth - 40, 800);
   const chartHeight = 300;
 
-  const sortedData = [...playbackData].sort(
-    (a: { date: string }, b: { date: string }) =>
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  // Every day of the selected timeframe, with 0 on days with no plays.
+  const sortedData = daysInTimeframe(playbackData);
+  const dateFormat = dayLabelFormat(sortedData);
+  const firstDay = sortedData.length ? parseISO(sortedData[0].date) : new Date();
+  const lastDay = sortedData.length ? parseISO(sortedData[sortedData.length - 1].date) : firstDay;
 
   const activityData = sortedData.map((d: { minutes: number }, i: number) => ({
     x: i,
@@ -114,13 +117,14 @@ export default function MinutesPlayedPerDayPage() {
               data={activityData}
               width={chartWidth}
               height={chartHeight}
-              xLabel="Days"
+              xLabel="Date"
+              xTickFormat={(i) => format(addDays(firstDay, i), dateFormat)}
               yLabel="Minutes"
               lineColor={CHART_COLORS.activity.line}
               areaColor={CHART_COLORS.activity.area}
               alt={
                 <ChartAlt
-                  caption={`Daily activity over ${sortedData.length} days: ${totalHours} hours in total, an average of ${Math.round(totalMinutes / Math.max(sortedData.length, 1))} minutes a day, and a peak of ${Math.max(...sortedData.map((d: { minutes: number }) => d.minutes))} minutes in one day.`}
+                  caption={`Daily activity from ${format(firstDay, "MMM d, yyyy")} to ${format(lastDay, "MMM d, yyyy")} (${sortedData.length} days): ${totalHours} hours in total, an average of ${Math.round(totalMinutes / Math.max(sortedData.length, 1))} minutes a day, and a peak of ${Math.max(0, ...sortedData.map((d: { minutes: number }) => d.minutes))} minutes in one day.`}
                 />
               }
             />

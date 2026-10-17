@@ -8,10 +8,12 @@ import {
 import TimeframeSelector from "../TimeframeSelector";
 import { TimeframeOption } from "../../lib/timeframe";
 import type { Variants } from "framer-motion";
+import { setHighContrast, useHighContrast } from "../../lib/contrast";
 
 const NEXT_PAGE = "/configure";
 const SplashPage = () => {
   const navigate = useNavigate();
+  const high = useHighContrast();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -41,7 +43,12 @@ const SplashPage = () => {
   };
 
   return (
-    <Container as="main" id="main" tabIndex={-1}>
+    <Container
+      as="main"
+      id="main"
+      tabIndex={-1}
+      css={high ? { background: "linear-gradient(135deg, #14006B 0%, #1F0A80 50%, #34007A 100%)" } : undefined}
+    >
       <motion.div
         style={{ maxWidth: "800px", textAlign: "center", padding: "40px" }}
         variants={containerVariants}
@@ -74,6 +81,32 @@ const SplashPage = () => {
 
         <motion.div variants={itemVariants}>
           <TimeframeSelector onTimeframeChange={handleTimeframeChange} />
+        </motion.div>
+
+        <motion.div variants={itemVariants} style={{ marginBottom: "1.5rem" }}>
+          <label
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 12,
+              minHeight: 44,
+              cursor: "pointer",
+              fontSize: "1.125rem",
+              textAlign: "left",
+            }}
+          >
+            <input
+              type="checkbox"
+              className="wrapped-check"
+              checked={high}
+              onChange={(e) => setHighContrast(e.target.checked)}
+              aria-describedby="high-contrast-hint"
+            />
+            High contrast
+          </label>
+          <p id="high-contrast-hint" style={{ fontSize: "0.875rem", margin: "0 auto", maxWidth: 360 }}>
+            Darker pages and share images with the strongest text contrast.
+          </p>
         </motion.div>
 
         <motion.ul

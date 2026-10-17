@@ -1,4 +1,4 @@
-import { ReactNode, RefObject, useRef, useState } from "react";
+import { ReactNode, RefObject, useLayoutEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { ShareButton } from "@/components/ShareButton";
 import { renderElement, renderPage } from "@/lib/share";
@@ -8,6 +8,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { PAGES, visiblePages } from "@/lib/pages";
 import { useLibraryKinds } from "@/hooks/queries/useLibraryKinds";
 import { styled } from "@stitches/react";
+import { tint, useHighContrast } from "@/lib/contrast";
 
 interface PageContainerProps {
   children: ReactNode;
@@ -35,6 +36,16 @@ const PageContainer = ({
   const pageRef = useRef<HTMLElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const high = useHighContrast();
+  const tinted = tint(backgroundColor, high);
+  // Paint the root the same colour, so overscroll (rubber-banding) never shows white behind the page.
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    if (boxRef.current) root.style.backgroundColor = getComputedStyle(boxRef.current).backgroundColor;
+    return () => {
+      root.style.backgroundColor = "";
+    };
+  }, [tinted]);
   const { pathname } = useLocation();
   const { data: kinds } = useLibraryKinds();
   const all = PAGES.map((p) => p.path);
@@ -70,7 +81,7 @@ const PageContainer = ({
     <Box
       ref={boxRef}
       style={{
-        backgroundColor: `color-mix(in srgb, ${backgroundColor} 58%, black)`,
+        backgroundColor: tinted,
         color: "white",
         minHeight: "100vh",
         display: "flex",

@@ -15,6 +15,7 @@ import { useCalendar } from "@/hooks/queries/useCalendar";
 import { getTopRatedContent } from "@/lib/rating-helpers";
 import { getHolidayDatesIn } from "@/lib/holiday-helpers";
 import { getCurrentTimeframe } from "@/lib/timeframe";
+import { dayLabelFormat, daysInTimeframe } from "@/lib/days";
 import { getCachedHiddenIds } from "@/lib/cache";
 import { formatDuration } from "@/lib/utils";
 import type { SimpleItemDto } from "@/lib/queries";
@@ -225,8 +226,9 @@ export function HolidayCard({ bg }: CardProps) {
 export function MinutesCard({ bg }: CardProps) {
   const { data: days } = useMinutesPlayedPerDay();
   const { data: patterns } = useViewingPatterns();
-  const series = ((days ?? []) as { date: string; minutes: number }[]).slice().sort((a, b) => a.date.localeCompare(b.date));
-  if (!series.length) return null;
+  // Every day of the selected timeframe, with 0 on days with no plays.
+  const series = daysInTimeframe((days ?? []) as { date: string; minutes: number }[]);
+  if (!series.length || !(days ?? []).length) return null;
   const total = series.reduce((s, d) => s + d.minutes, 0);
   const max = Math.max(...series.map((d) => d.minutes), 1);
   const W = 312;
@@ -236,7 +238,7 @@ export function MinutesCard({ bg }: CardProps) {
   // Date axis: first, middle and last day. Short spans get the day, long spans the month and year.
   const first = parseISO(series[0].date);
   const last = parseISO(series[series.length - 1].date);
-  const dateFormat = differenceInCalendarDays(last, first) > 120 ? "MMM yyyy" : "MMM d";
+  const dateFormat = dayLabelFormat(series);
   const ticks = [first, parseISO(series[Math.floor((series.length - 1) / 2)].date), last].map((d) => format(d, dateFormat));
 
   const dow = (patterns?.dayOfWeek ?? []) as { day: number; minutes: number }[];

@@ -8,6 +8,7 @@ import { useMovies } from "@/hooks/queries/useMovies";
 import { useShows } from "@/hooks/queries/useShows";
 import { useAudio } from "@/hooks/queries/useAudio";
 import { getCurrentTimeframe } from "@/lib/timeframe";
+import { cardGradient, useHighContrast } from "@/lib/contrast";
 import { getImageUrlById, SimpleItemDto } from "@/lib/queries";
 
 // Plain <img>, not Radix Avatar or the lazy-loaded poster, so the card is complete when captured.
@@ -47,6 +48,7 @@ const Stat = ({ value, label }: { value: number; label: string }) =>
 
 export default function SummaryPage() {
   const cardRef = useRef<HTMLDivElement>(null);
+  const high = useHighContrast();
   const timeframe = getCurrentTimeframe();
   const top = useTopTen();
   const minutes = useMinutesPlayedPerDay();
@@ -67,6 +69,7 @@ export default function SummaryPage() {
         <h1 className="wrapped-sr-only">Your summary: {timeframe.name}</h1>
         <div
           ref={cardRef}
+          data-share-contrast={high ? "high" : undefined}
           style={{
             width: "100%",
             maxWidth: 360,
@@ -79,7 +82,7 @@ export default function SummaryPage() {
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-            background: "linear-gradient(160deg, #2D00F7 0%, #6A00FF 55%, #B100E8 100%)",
+            background: cardGradient(high),
           }}
         >
           <div>

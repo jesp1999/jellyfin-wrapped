@@ -13,6 +13,7 @@ export function LineChart({
   lineColor,
   areaColor,
   alt,
+  xTickFormat,
 }: {
   data: LineChartData[];
   width: number;
@@ -23,6 +24,8 @@ export function LineChart({
   areaColor: string;
   // Text version of the chart for screen readers.
   alt?: ReactNode;
+  // Label for a tick on the x axis (e.g. a date for a day index). Return "" to skip a tick.
+  xTickFormat?: (value: number) => string;
 }) {
   const ref = useRef<SVGSVGElement>(null);
 
@@ -76,7 +79,14 @@ export function LineChart({
     svg
       .append("g")
       .attr("transform", `translate(0,${innerHeight})`)
-      .call(d3.axisBottom(x))
+      .call(
+        xTickFormat
+          ? d3
+              .axisBottom(x)
+              .ticks(Math.max(2, Math.floor(innerWidth / 90)))
+              .tickFormat((v) => (Number.isInteger(v.valueOf()) ? xTickFormat(v.valueOf()) : ""))
+          : d3.axisBottom(x)
+      )
       .append("text")
       .attr("x", innerWidth / 2)
       .attr("y", 35)
@@ -94,7 +104,7 @@ export function LineChart({
       .attr("fill", "currentColor")
       .style("text-anchor", "middle")
       .text(yLabel);
-  }, [data, width, height, xLabel, yLabel, lineColor, areaColor]);
+  }, [data, width, height, xLabel, yLabel, lineColor, areaColor, xTickFormat]);
 
   return (
     <>

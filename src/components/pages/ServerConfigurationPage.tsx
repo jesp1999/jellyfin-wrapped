@@ -14,6 +14,8 @@ import {
   JELLYFIN_AUTH_TOKEN_CACHE_KEY,
   JELLYFIN_SERVER_URL_CACHE_KEY,
   JELLYFIN_USERNAME_CACHE_KEY,
+  isRemembered,
+  setRemember,
   setCacheValue,
 } from "@/lib/cache";
 
@@ -40,6 +42,7 @@ const ServerConfigurationPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [useAuthToken, setUseAuthToken] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [remember, setRememberState] = useState<boolean>(isRemembered);
 
   const handleServerUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -265,6 +268,28 @@ const ServerConfigurationPage = () => {
                   </>
                 )}
               </Flex>
+
+              <div>
+                <label
+                  style={{ display: "inline-flex", alignItems: "center", gap: 12, minHeight: 44, cursor: "pointer", color: "#222" }}
+                >
+                  <input
+                    type="checkbox"
+                    className="wrapped-check wrapped-check--light"
+                    checked={remember}
+                    onChange={(e) => {
+                      setRememberState(e.target.checked);
+                      setRemember(e.target.checked);
+                    }}
+                    aria-describedby="remember-hint"
+                  />
+                  Remember me
+                </label>
+                <HelpText id="remember-hint">
+                  Keeps the server, username and sign-in session on this device. Your password is never saved. Off by
+                  default: closing the tab signs you out.
+                </HelpText>
+              </div>
 
               {error && <Text role="alert" size="2" color="red">{error}</Text>}
               <StyledButton size="3" disabled={isLoading} style={{ minHeight: 44 }}>

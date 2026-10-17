@@ -1,3 +1,4 @@
+import { cardGradient, useHighContrast } from "@/lib/contrast";
 import { getWatermark } from "@/lib/watermark";
 import { formatWatchTime } from "@/lib/time-helpers";
 import type { SimpleItemDto } from "@/lib/queries";
@@ -24,8 +25,10 @@ const Section = ({ heading, rows }: { heading: string; rows: Row[] }) =>
 
 // 360x640 card, rendered off screen and captured when the Share button is used.
 export function TopTenShareCard({ movies, shows, subtitle }: { movies: Row[]; shows: Row[]; subtitle: string }) {
+  const high = useHighContrast();
   return (
     <div
+      data-share-contrast={high ? "high" : undefined}
       style={{
         width: 360,
         height: 640,
@@ -34,7 +37,7 @@ export function TopTenShareCard({ movies, shows, subtitle }: { movies: Row[]; sh
         color: "white",
         display: "flex",
         flexDirection: "column",
-        background: "linear-gradient(160deg, #2D00F7 0%, #6A00FF 55%, #B100E8 100%)",
+        background: cardGradient(high),
       }}
     >
       <div style={{ fontSize: 12, letterSpacing: 2, textTransform: "uppercase", opacity: 0.85 }}>Jellyfin Wrapped</div>

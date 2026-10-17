@@ -1,5 +1,6 @@
 import { getWatermark } from "@/lib/watermark";
 import { getCurrentTimeframe } from "@/lib/timeframe";
+import { tint, useHighContrast } from "@/lib/contrast";
 import { ReactNode, useEffect, useState } from "react";
 import { getImageUrlById, SimpleItemDto } from "@/lib/queries";
 
@@ -23,8 +24,10 @@ export function ShareShell({
   children: ReactNode;
 }) {
   const mark = getWatermark();
+  const high = useHighContrast();
   return (
     <div
+      data-share-contrast={high ? "high" : undefined}
       style={{
         width: CARD_W,
         height: CARD_H,
@@ -34,8 +37,9 @@ export function ShareShell({
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
-        textShadow: "0 1px 2px rgba(0,0,0,0.25)",
-        background: `linear-gradient(180deg, rgba(255,255,255,0.14), rgba(0,0,0,0.28)), ${bg}`,
+        // Default: the page colour with a soft gradient. High contrast: a solid dark tint, 7:1 or better.
+        textShadow: high ? "none" : "0 1px 2px rgba(0,0,0,0.25)",
+        background: high ? tint(bg, true) : `linear-gradient(180deg, rgba(255,255,255,0.14), rgba(0,0,0,0.28)), ${bg}`,
       }}
     >
       <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", opacity: 0.9 }}>Jellyfin Wrapped</div>
