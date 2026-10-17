@@ -1,3 +1,4 @@
+import { getWatermark } from "@/lib/watermark";
 import { ReactNode, useEffect, useState } from "react";
 import { getImageUrlById, SimpleItemDto } from "@/lib/queries";
 
@@ -20,6 +21,7 @@ export function ShareShell({
   center?: boolean;
   children: ReactNode;
 }) {
+  const mark = getWatermark();
   return (
     <div
       style={{
@@ -51,7 +53,7 @@ export function ShareShell({
       >
         {children}
       </div>
-      <div style={{ fontSize: 11, opacity: 0.75, marginTop: 12 }}>{window.location.host}</div>
+      {mark && <div style={{ fontSize: 11, opacity: 0.75, marginTop: 12 }}>{mark}</div>}
     </div>
   );
 }

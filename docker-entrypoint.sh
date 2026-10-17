@@ -35,11 +35,22 @@ if [ -n "$api_key" ]; then
 fi
 
 # --- env.js ---------------------------------------------------------------
+# Footer text on share images: plain text only, "none" hides it, unset shows the site address.
+watermark="${SHARE_WATERMARK:-}"
+if [ -n "$watermark" ]; then
+  printf '%s' "$watermark" | grep -Eq '^[A-Za-z0-9 ._:/@-]{1,60}$' ||
+    fail "SHARE_WATERMARK may only contain letters, digits, spaces and . _ : / @ -"
+fi
+extra=""
+[ -n "$watermark" ] && extra=", SHARE_WATERMARK: '$watermark'"
+
 if [ -n "$jellyfin_url" ] && [ -n "$api_key" ]; then
   echo "WARNING: direct mode. The admin API key is sent to every visitor. Do not host this publicly; set WRAPPED_SERVER_URL and leave JELLYFIN_API_KEY off the frontend." >&2
-  printf "window.ENV = { JELLYFIN_SERVER_URL: '%s', JELLYFIN_API_KEY: '%s' };\n" "$jellyfin_url" "$api_key" >"$OUT/env.js"
+  printf "window.ENV = { JELLYFIN_SERVER_URL: '%s', JELLYFIN_API_KEY: '%s'%s };\n" "$jellyfin_url" "$api_key" "$extra" >"$OUT/env.js"
 elif [ -n "$jellyfin_url" ]; then
-  printf "window.ENV = { JELLYFIN_SERVER_URL: '%s' };\n" "$jellyfin_url" >"$OUT/env.js"
+  printf "window.ENV = { JELLYFIN_SERVER_URL: '%s'%s };\n" "$jellyfin_url" "$extra" >"$OUT/env.js"
+elif [ -n "$watermark" ]; then
+  printf "window.ENV = { SHARE_WATERMARK: '%s' };\n" "$watermark" >"$OUT/env.js"
 else
   : >"$OUT/env.js"
 fi

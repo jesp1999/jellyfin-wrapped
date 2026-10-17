@@ -1,3 +1,4 @@
+import { getWatermark } from "@/lib/watermark";
 import { formatWatchTime } from "@/lib/time-helpers";
 import type { SimpleItemDto } from "@/lib/queries";
 
@@ -41,7 +42,7 @@ export function TopTenShareCard({ movies, shows, subtitle }: { movies: Row[]; sh
       <div style={{ fontSize: 13, opacity: 0.85, marginTop: 2 }}>{subtitle}</div>
       <Section heading="Movies" rows={movies} />
       <Section heading="Shows" rows={shows} />
-      <div style={{ marginTop: "auto", fontSize: 12, opacity: 0.7 }}>{window.location.host}</div>
+      {getWatermark() && <div style={{ marginTop: "auto", fontSize: 12, opacity: 0.7 }}>{getWatermark()}</div>}
     </div>
   );
 }

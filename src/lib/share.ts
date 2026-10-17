@@ -1,3 +1,4 @@
+import { getWatermark } from "@/lib/watermark";
 import { getFontEmbedCSS, toBlob } from "html-to-image";
 
 const BLANK = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
@@ -103,7 +104,8 @@ export async function renderPage(el: HTMLElement, backgroundColor: string): Prom
       grid.appendChild(img);
     }
     card.appendChild(grid);
-    card.appendChild(h("div", "margin-top:auto;font-size:12px;opacity:.7;", window.location.host));
+    const mark = getWatermark();
+    if (mark) card.appendChild(h("div", "margin-top:auto;font-size:12px;opacity:.7;", mark));
   } else {
     const clone = el.cloneNode(true) as HTMLElement;
     clone.style.margin = "0";
