@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import TimeframeSelector from "./TimeframeSelector";
 import { visiblePages } from "@/lib/pages";
 import { useLibraryKinds } from "@/hooks/queries/useLibraryKinds";
+import { Warmup } from "./Warmup";
 
 
 const Navigation = () => {
@@ -13,6 +14,7 @@ const Navigation = () => {
   const queryClient = useQueryClient();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [warmups, setWarmups] = useState(0);
   const hidden = location.pathname === "/" || location.pathname === "/configure";
   const { data: kinds } = useLibraryKinds(!hidden);
 
@@ -29,10 +31,13 @@ const Navigation = () => {
     // Every query reads the selected timeframe when it runs. Resetting them re-runs the
     // ones on screen now and the others the next time their page opens, with no reload.
     void queryClient.resetQueries({ predicate: (q) => q.queryKey[0] !== "libraryKinds" });
+    // ...and load the rest now, in the background, instead of when each page is opened.
+    setWarmups((n) => n + 1);
   };
 
   return (
     <>
+      {warmups > 0 && <Warmup key={warmups} />}
       <NavToggle onClick={toggleNav}>{isOpen ? "✕" : "☰"}</NavToggle>
 
       <SideNav
