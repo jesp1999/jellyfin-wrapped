@@ -215,3 +215,7 @@ Your password is never stored. The server URL, username and Jellyfin session tok
 ![](https://files.jpc.io/d/rNQyo-Screenshot%202025-01-02%20at%2012.15.57%E2%80%AFAM.png)
 
 ![](https://files.jpc.io/d/rNQyo-Screenshot%202025-01-02%20at%2012.16.33%E2%80%AFAM.png)
+
+## License
+
+GPL-3.0-or-later, see [LICENSE](LICENSE). Code derived from [johnpc/jellyfin-wrapped](https://github.com/johnpc/jellyfin-wrapped) remains under its original MIT license, kept in [LICENSE-MIT](LICENSE-MIT).
