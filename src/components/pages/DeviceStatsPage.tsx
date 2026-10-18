@@ -91,12 +91,15 @@ export default function DeviceStatsPage() {
               title="Browsers"
               containerWidth={containerWidth}
             />
-            <PieChart
-              data={osData}
-              colors={CHART_COLORS.os}
-              title="Operating Systems"
-              containerWidth={containerWidth}
-            />
+            {/* The odd one out spans the row, so it sits centred instead of in the left column. */}
+            <div style={{ gridColumn: "1 / -1" }}>
+              <PieChart
+                data={osData}
+                colors={CHART_COLORS.os}
+                title="Operating Systems"
+                containerWidth={containerWidth}
+              />
+            </div>
           </Grid>
         </Grid>
       </Container>

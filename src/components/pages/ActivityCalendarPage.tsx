@@ -37,12 +37,15 @@ export default function ActivityCalendarPage() {
     <PageContainer backgroundColor="var(--indigo-8)" nextPage={NEXT_PAGE} previousPage="/device-stats">
       <Container size="4" p="4">
         <Card className="p-6">
-          <Title as={motion.h1} className="text-2xl font-bold mb-4">
-            Your Viewing Activity
-          </Title>
-          <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginBottom: "1rem" }}>
-            A calendar view of your daily viewing patterns
-          </p>
+          {/* Centred like the other pages, so the floating menu button never sits over the title. */}
+          <div style={{ textAlign: "center" }}>
+            <Title as={motion.h1} className="text-2xl font-bold mb-4">
+              Your Activity Calendar
+            </Title>
+            <p style={{ fontSize: "1.125rem", color: "rgba(255, 255, 255, 0.92)", marginBottom: "1rem" }}>
+              A calendar view of your daily viewing patterns
+            </p>
+          </div>
           <div aria-hidden="true" style={{ height: (isMobile ? 150 : 250) * (Number(toDate.slice(0, 4)) - Number(fromDate.slice(0, 4)) + 1) }}>
             <ResponsiveCalendar
               data={data ?? []}

@@ -95,7 +95,7 @@ const PageContainer = ({
     >
       <main ref={pageRef} id="main" tabIndex={-1} style={{ flex: 1, paddingBottom: "5rem" }}>
         {showTimeframe && (
-          <p style={{ margin: 0, padding: "1rem 1rem 0", textAlign: "center", fontSize: "0.9375rem" }}>
+          <p style={{ margin: 0, padding: "1rem 4.5rem 0", textAlign: "center", textWrap: "balance", fontSize: "0.9375rem" }}>
             {formatTimeframeLabel(timeframe)}
           </p>
         )}
