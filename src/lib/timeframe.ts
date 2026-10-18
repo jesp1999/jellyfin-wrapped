@@ -1,4 +1,7 @@
+import { useSyncExternalStore } from "react";
 import {
+  isSameMonth,
+  isSameYear,
   format,
   subMonths,
   subYears,
@@ -122,8 +125,10 @@ export const getCurrentTimeframe = (): TimeframeOption => {
 };
 
 // Set the current timeframe
+const listeners = new Set<() => void>();
 export const setCurrentTimeframe = (timeframe: TimeframeOption): void => {
   currentTimeframe = timeframe;
+  listeners.forEach((l) => l());
   try {
     sessionStorage.setItem(TIMEFRAME_STORAGE_KEY, timeframe.id);
   } catch {
@@ -137,3 +142,27 @@ export const formatTimeframeDescription = (
 ): string => {
   return timeframe.description;
 };
+
+// Re-renders the caller when the selected timeframe changes.
+export const useTimeframe = (): TimeframeOption =>
+  useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb);
+      return () => listeners.delete(cb);
+    },
+    getCurrentTimeframe,
+    getCurrentTimeframe
+  );
+
+// The exact dates a timeframe covers, e.g. "Sep 1 – 30, 2026" or "Oct 17, 2025 – Oct 17, 2026".
+// All time has no real start, so it says how far it runs.
+export const formatTimeframeRange = (tf: TimeframeOption): string => {
+  const { startDate: a, endDate: b } = tf;
+  if (tf.id === "all-time") return `through ${format(b, "MMM d, yyyy")}`;
+  if (isSameMonth(a, b)) return `${format(a, "MMM d")} – ${format(b, "d, yyyy")}`;
+  if (isSameYear(a, b)) return `${format(a, "MMM d")} – ${format(b, "MMM d, yyyy")}`;
+  return `${format(a, "MMM d, yyyy")} – ${format(b, "MMM d, yyyy")}`;
+};
+
+// Name and dates together, e.g. "Last Month · Sep 1 – 30, 2026".
+export const formatTimeframeLabel = (tf: TimeframeOption): string => `${tf.name} · ${formatTimeframeRange(tf)}`;

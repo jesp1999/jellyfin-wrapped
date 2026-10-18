@@ -7,7 +7,7 @@ import { useMinutesPlayedPerDay } from "@/hooks/queries/useMinutesPlayedPerDay";
 import { useMovies } from "@/hooks/queries/useMovies";
 import { useShows } from "@/hooks/queries/useShows";
 import { useAudio } from "@/hooks/queries/useAudio";
-import { getCurrentTimeframe } from "@/lib/timeframe";
+import { formatTimeframeRange, getCurrentTimeframe } from "@/lib/timeframe";
 import { cardGradient, useHighContrast } from "@/lib/contrast";
 import { getImageUrlById, SimpleItemDto } from "@/lib/queries";
 
@@ -64,7 +64,7 @@ export default function SummaryPage() {
   const topShow = top.data?.shows[0]?.item;
 
   return (
-    <PageContainer backgroundColor="var(--indigo-8)" shareRef={cardRef}>
+    <PageContainer backgroundColor="var(--indigo-8)" shareRef={cardRef} showTimeframe={false}>
       <Container size="1" p="4">
         <h1 className="wrapped-sr-only">Your summary: {timeframe.name}</h1>
         <div
@@ -90,6 +90,7 @@ export default function SummaryPage() {
               Jellyfin Wrapped
             </div>
             <div style={{ fontSize: 34, fontWeight: 800, lineHeight: 1.1, marginTop: 4 }}>{timeframe.name}</div>
+            <div style={{ fontSize: 14, marginTop: 4 }}>{formatTimeframeRange(timeframe)}</div>
           </div>
 
           {hours > 0 && (

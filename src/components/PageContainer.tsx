@@ -9,6 +9,7 @@ import { PAGES, visiblePages } from "@/lib/pages";
 import { useLibraryKinds } from "@/hooks/queries/useLibraryKinds";
 import { styled } from "@stitches/react";
 import { tint, useHighContrast } from "@/lib/contrast";
+import { formatTimeframeLabel, useTimeframe } from "@/lib/timeframe";
 
 interface PageContainerProps {
   children: ReactNode;
@@ -21,6 +22,8 @@ interface PageContainerProps {
   shareCard?: ReactNode;
   // False on pages with nothing to share.
   shareable?: boolean;
+  // Show the selected timeframe, with its dates, at the top of the page. On by default.
+  showTimeframe?: boolean;
 }
 
 const PageContainer = ({
@@ -31,7 +34,9 @@ const PageContainer = ({
   shareRef,
   shareCard,
   shareable = true,
+  showTimeframe = true,
 }: PageContainerProps) => {
+  const timeframe = useTimeframe();
   const navigate = useNavigate();
   const pageRef = useRef<HTMLElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -89,6 +94,11 @@ const PageContainer = ({
       }}
     >
       <main ref={pageRef} id="main" tabIndex={-1} style={{ flex: 1, paddingBottom: "5rem" }}>
+        {showTimeframe && (
+          <p style={{ margin: 0, padding: "1rem 1rem 0", textAlign: "center", fontSize: "0.9375rem" }}>
+            {formatTimeframeLabel(timeframe)}
+          </p>
+        )}
         {children}
       </main>
       {card && (

@@ -9,7 +9,7 @@ import { TopTenShareCard } from "@/components/share/TopTenShareCard";
 import { Container, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { Title } from "@/components/ui/styled";
-import { getCurrentTimeframe } from "@/lib/timeframe";
+import { formatTimeframeLabel, getCurrentTimeframe } from "@/lib/timeframe";
 
 export const TopTen = () => {
   const timeframe = getCurrentTimeframe();
@@ -24,13 +24,12 @@ export const TopTen = () => {
       backgroundColor="var(--purple-8)"
       nextPage="/first-watched"
       previousPage="/loading"
-      shareCard={<TopTenShareCard movies={data.movies} shows={data.shows} subtitle={timeframe.description} />}
+      shareCard={<TopTenShareCard movies={data.movies} shows={data.shows} subtitle={formatTimeframeLabel(timeframe)} />}
     >
       <Container size="4" p="4">
         <Grid gap="6">
           <div style={{ textAlign: "center" }}>
             <Title as={motion.h1}>Your Top 10</Title>
-            <p style={{ fontSize: "1.125rem", color: "white", marginTop: "0.5rem" }}>{timeframe.description}</p>
           </div>
 
           <Grid columns={{ initial: "1", md: data.movies.length && data.shows.length ? "2" : "1" }} gap="6">

@@ -1,5 +1,5 @@
 import { getWatermark } from "@/lib/watermark";
-import { getCurrentTimeframe } from "@/lib/timeframe";
+import { formatTimeframeRange, getCurrentTimeframe } from "@/lib/timeframe";
 import { tint, useHighContrast } from "@/lib/contrast";
 import { ReactNode, useEffect, useState } from "react";
 import { getImageUrlById, SimpleItemDto } from "@/lib/queries";
@@ -24,6 +24,7 @@ export function ShareShell({
   children: ReactNode;
 }) {
   const mark = getWatermark();
+  const tf = getCurrentTimeframe();
   const high = useHighContrast();
   return (
     <div
@@ -42,7 +43,7 @@ export function ShareShell({
         background: high ? tint(bg, true) : `linear-gradient(180deg, rgba(255,255,255,0.14), rgba(0,0,0,0.28)), ${bg}`,
       }}
     >
-      <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", opacity: 0.9 }}>Jellyfin Wrapped</div>
+      <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", opacity: 0.9, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Jellyfin Wrapped · {tf.name}</div>
       <div style={{ fontSize: 26, fontWeight: 800, lineHeight: 1.12, marginTop: 4 }}>{title}</div>
       {subtitle && <div style={{ fontSize: 13, opacity: 0.9, marginTop: 4 }}>{subtitle}</div>}
       <div
@@ -58,8 +59,8 @@ export function ShareShell({
       >
         {children}
       </div>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: 11, opacity: 0.75, marginTop: 12 }}>
-        <span>{getCurrentTimeframe().description}</span>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap", fontSize: 11, opacity: 0.75, marginTop: 12 }}>
+        <span>{formatTimeframeRange(tf)}</span>
         {mark && <span>{mark}</span>}
       </div>
     </div>
