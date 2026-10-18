@@ -56,13 +56,13 @@ export default function GenreReviewPage() {
         title="No Genre Data"
         backgroundColor="var(--pink-8)"
         nextPage={NEXT_PAGE}
-        previousPage="/actors"
+        previousPage="/directors"
       />
     );
   }
 
   return (
-    <PageContainer backgroundColor="var(--pink-8)" nextPage={NEXT_PAGE} previousPage="/actors">
+    <PageContainer backgroundColor="var(--pink-8)" nextPage={NEXT_PAGE} previousPage="/directors">
       <Container size="4" p="4">
         <Grid gap="6">
           <div style={{ textAlign: "center" }}>

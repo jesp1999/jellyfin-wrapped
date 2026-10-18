@@ -14,7 +14,7 @@ import {
   OldestShowCard,
   ShowOfMonthCard,
 } from "./cards";
-import { ActorsCard, GenreCard, MoviesCard, ShowsCard, UnfinishedCard } from "./cards2";
+import { ActorsCard, DirectorsCard, GenreCard, MoviesCard, ShowsCard, UnfinishedCard } from "./cards2";
 
 // Pages that share a purpose-built 9:16 card. The others fall back to a poster wall or a crop.
 export const SHARE_CARDS: Record<string, ComponentType<CardProps>> = {
@@ -33,6 +33,7 @@ export const SHARE_CARDS: Record<string, ComponentType<CardProps>> = {
   "/movies": MoviesCard,
   "/shows": ShowsCard,
   "/actors": ActorsCard,
+  "/directors": DirectorsCard,
   "/genres": GenreCard,
   "/unfinished-shows": UnfinishedCard,
 };

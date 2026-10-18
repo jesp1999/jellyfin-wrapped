@@ -19,6 +19,7 @@ import ShowReviewPage from "./components/pages/ShowReviewPage";
 import LiveTvReviewPage from "./components/pages/LiveTvReviewPage";
 import AudioReviewPage from "./components/pages/AudioReviewPage";
 import FavoriteActorsPage from "./components/pages/FavoriteActorsPage";
+import FavoriteDirectorsPage from "./components/pages/FavoriteDirectorsPage";
 import OldestShowPage from "./components/pages/OldestShowPage";
 import OldestMoviePage from "./components/pages/OldestMoviePage";
 import MusicVideoPage from "./components/pages/MusicVideoPage";
@@ -181,6 +182,10 @@ const router = createBrowserRouter([
       {
         path: "/actors",
         element: <FavoriteActorsPage />,
+      },
+      {
+        path: "/directors",
+        element: <FavoriteDirectorsPage />,
       },
       {
         path: "/music-videos",

@@ -1,6 +1,7 @@
 import { useMovies } from "@/hooks/queries/useMovies";
 import { useShows } from "@/hooks/queries/useShows";
 import { useFavoriteActors } from "@/hooks/queries/useFavoriteActors";
+import { useFavoriteDirectors } from "@/hooks/queries/useFavoriteDirectors";
 import { useUnfinishedShows } from "@/hooks/queries/useUnfinishedShows";
 import { getTopGenre } from "@/lib/genre-helpers";
 import { getCachedHiddenIds } from "@/lib/cache";
@@ -35,17 +36,16 @@ export function ShowsCard({ bg }: CardProps) {
   );
 }
 
-type Actor = { name: string; count: number; details?: { Id?: string | null } };
+type Person = { name: string; count: number; details?: { Id?: string | null } };
 
-export function ActorsCard({ bg }: CardProps) {
-  const { data } = useFavoriteActors();
+function PeopleCard({ bg, people, title, subtitle }: CardProps & { people: Person[]; title: string; subtitle: string }) {
   // The page shows the top 20, so "more" is counted against those.
-  const actors = ((data ?? []) as Actor[]).slice(0, 20);
-  if (!actors.length) return null;
-  const shown = actors.slice(0, 9);
+  const top = people.slice(0, 20);
+  if (!top.length) return null;
+  const shown = top.slice(0, 9);
   const cols = Math.min(3, shown.length);
   return (
-    <ShareShell bg={bg} center title="Your Favorite Actors" subtitle="The performers who appeared most in what you watched">
+    <ShareShell bg={bg} center title={title} subtitle={subtitle}>
       <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: "14px 8px" }}>
         {shown.map((a) => (
           <div key={a.name} style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", minWidth: 0 }}>
@@ -55,9 +55,19 @@ export function ActorsCard({ bg }: CardProps) {
           </div>
         ))}
       </div>
-      <More n={actors.length - shown.length} />
+      <More n={top.length - shown.length} />
     </ShareShell>
   );
+}
+
+export function ActorsCard({ bg }: CardProps) {
+  const { data } = useFavoriteActors();
+  return <PeopleCard bg={bg} people={(data ?? []) as Person[]} title="Your Favorite Actors" subtitle="The performers who appeared most in what you watched" />;
+}
+
+export function DirectorsCard({ bg }: CardProps) {
+  const { data } = useFavoriteDirectors();
+  return <PeopleCard bg={bg} people={(data ?? []) as Person[]} title="Your Favorite Directors" subtitle="The directors behind the most of what you watched" />;
 }
 
 export function GenreCard({ bg }: CardProps) {

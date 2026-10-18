@@ -14,7 +14,7 @@ import { BaseItemPerson } from "@jellyfin/sdk/lib/generated-client";
 import { SimpleItemDto } from "@/lib/queries";
 
 
-const NEXT_PAGE = "/genres";
+const NEXT_PAGE = "/directors";
 
 export default function FavoriteActorsPage() {
   const { showBoundary } = useErrorBoundary();

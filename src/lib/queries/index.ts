@@ -29,7 +29,9 @@ export * from "./livetv";
 export * from "./stats";
 
 // Actors
+export * from "./people";
 export * from "./actors";
+export * from "./directors";
 
 // Patterns
 export * from "./patterns";

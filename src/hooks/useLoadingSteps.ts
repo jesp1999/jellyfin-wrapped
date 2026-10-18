@@ -1,6 +1,7 @@
 import { useMovies } from "./queries/useMovies";
 import { useShows } from "./queries/useShows";
 import { useFavoriteActors } from "./queries/useFavoriteActors";
+import { useFavoriteDirectors } from "./queries/useFavoriteDirectors";
 import { useAudio } from "./queries/useAudio";
 import { useLiveTvChannels } from "./queries/useLiveTvChannels";
 import { useUnfinishedShows } from "./queries/useUnfinishedShows";
@@ -25,6 +26,7 @@ export function useLoadingSteps() {
     { message: "Counting your movies...", query: useMovies(), kinds: ["movies"] },
     { message: "Counting your shows...", query: useShows(), kinds: ["shows"] },
     { message: "Finding your favorite actors...", query: useFavoriteActors(), kinds: ["movies"] },
+    { message: "Finding your favorite directors...", query: useFavoriteDirectors(), kinds: ["movies"] },
     { message: "Listening to your music...", query: useAudio(), kinds: ["music"] },
     { message: "Checking live TV...", query: useLiveTvChannels(), kinds: ["liveTv"] },
     { message: "Finding unfinished shows...", query: useUnfinishedShows(), kinds: ["shows"] },

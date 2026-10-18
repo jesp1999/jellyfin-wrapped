@@ -10,6 +10,8 @@ interface ActorCardProps {
   details: BaseItemPerson;
   seenInMovies: SimpleItemDto[];
   seenInShows: SimpleItemDto[];
+  // Replaces the default "You watched X n times" line.
+  blurb?: string;
 }
 
 export function ActorCard({
@@ -18,6 +20,7 @@ export function ActorCard({
   details,
   seenInMovies,
   seenInShows,
+  blurb,
 }: ActorCardProps) {
   const [imageUrl, setImageUrl] = useState<string>();
   const [ref, seen] = useInView<HTMLDivElement>();
@@ -57,7 +60,7 @@ export function ActorCard({
         {count > 0 && (
           <>
             <p className="text-sm text-muted-foreground">
-              You watched {name} {count} times
+              {blurb ?? `You watched ${name} ${count} times`}
             </p>
             <ul>
               {[...seenInMovies, ...seenInShows].map((itemDto, i) => (
