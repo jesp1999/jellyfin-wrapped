@@ -1,6 +1,6 @@
 import { getUserLibraryApi, getItemsApi } from "@jellyfin/sdk/lib/utils/api";
 import { getAuthenticatedJellyfinApi } from "../jellyfin-api";
-import { getCacheValue, setCacheValue, getCachedHiddenIds } from "../cache";
+import { getCacheValue, setCacheValue, getCachedHiddenIds, ITEM_CACHE_PREFIX, purgeOldItemCache } from "../cache";
 import { getCurrentUserId } from "./utils";
 import { SimpleItemDto } from "./types";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
@@ -17,6 +17,7 @@ const pickImageId = (item: BaseItemDto): string | undefined => {
 export const getItemDtosByIds = async (
   ids: string[]
 ): Promise<SimpleItemDto[]> => {
+  purgeOldItemCache();
   const hiddenIds = getCachedHiddenIds();
   const authenticatedApi = await getAuthenticatedJellyfinApi();
   const userId = await getCurrentUserId();
@@ -29,7 +30,7 @@ export const getItemDtosByIds = async (
   const uncachedIds: string[] = [];
 
   filteredIds.forEach((itemId) => {
-    const cachedItem = getCacheValue(`item4_${itemId}`);
+    const cachedItem = getCacheValue(`${ITEM_CACHE_PREFIX}${itemId}`);
     if (cachedItem) {
       cachedItems.push(JSON.parse(cachedItem) as SimpleItemDto);
     } else {
@@ -86,7 +87,7 @@ export const getItemDtosByIds = async (
               artist: item.AlbumArtists?.[0]?.Name ?? item.Artists?.[0] ?? item.ArtistItems?.[0]?.Name,
             };
 
-            setCacheValue(`item4_${item.Id}`, JSON.stringify(simpleItem));
+            setCacheValue(`${ITEM_CACHE_PREFIX}${item.Id}`, JSON.stringify(simpleItem));
             return simpleItem;
           }
         );
@@ -120,7 +121,7 @@ export const getItemDtosByIds = async (
           imageId: pickImageId(item.data),
           artist: item.data.AlbumArtists?.[0]?.Name ?? item.data.Artists?.[0] ?? item.data.ArtistItems?.[0]?.Name,
         };
-        setCacheValue(`item4_${itemId}`, JSON.stringify(simpleItem));
+        setCacheValue(`${ITEM_CACHE_PREFIX}${itemId}`, JSON.stringify(simpleItem));
         return simpleItem;
       } catch {
         console.debug(`Item ${itemId} not found, skipping`);

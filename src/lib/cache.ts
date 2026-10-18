@@ -54,6 +54,25 @@ export const setCacheValue = (key: string, value: string) => {
   }
 };
 
+// Item records (including their cast and crew) are cached in localStorage per item id with no expiry.
+// When the shape changes, or the server's data was corrected, bump the prefix: records under an old
+// prefix are never read again and are deleted the first time items are loaded.
+export const ITEM_CACHE_PREFIX = "item5_";
+const OLD_ITEM_CACHE_PREFIXES = ["item4_"];
+let purgedOldItems = false;
+export const purgeOldItemCache = () => {
+  if (purgedOldItems) return;
+  purgedOldItems = true;
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key && OLD_ITEM_CACHE_PREFIXES.some((p) => key.startsWith(p))) localStorage.removeItem(key);
+    }
+  } catch (error) {
+    console.warn("Error clearing old item cache:", error);
+  }
+};
+
 export const removeCacheValue = (key: string) => {
   delete localCache[key];
   try {
